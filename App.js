@@ -1,3 +1,4 @@
+// imports from packeges online
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
@@ -5,9 +6,19 @@ import { registerRootComponent } from "expo";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useState, useEffect } from "react";
 import * as Font from "expo-font";
+import "react-native-gesture-handler";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+
+// imports from my own files!
+import ChatListScreen from "./screens/ChatListScreen";
+import ChatSettingsScreen from "./screens/ChatSettingsScreen";
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
+
+// stack navigator
+const Stack = createStackNavigator();
 
 export default function App() {
   const [appIsLoaded, setAppIsLoaded] = useState(false);
@@ -16,7 +27,7 @@ export default function App() {
     const prepare = async () => {
       try {
         await Font.loadAsync({
-          "black" : require("./assets/fonts/Roboto-Black.ttf")
+          black: require("./assets/fonts/Roboto-Black.ttf"),
         });
       } catch (error) {
         console.log.error();
@@ -39,10 +50,21 @@ export default function App() {
   }
 
   return (
-    <SafeAreaProvider style={styles.container} onLayout={onLayout}>
-      <SafeAreaView>
-        <Text style={styles.label}>Hello!!</Text>
-      </SafeAreaView>
+    <SafeAreaProvider onLayout={onLayout}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Home"
+            options={{ headerShown: false }}
+            component={ChatListScreen}
+          />
+          <Stack.Screen
+            name="ChatSettings"
+            options={{headerTitle: "Settings"}}
+            component={ChatSettingsScreen}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
     </SafeAreaProvider>
   );
 }
@@ -54,11 +76,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  label : {
+  label: {
     fontFamily: "black",
-    fontSize: 18, 
-    color: "black"
-  }
+    fontSize: 18,
+    color: "black",
+  },
 });
 
 registerRootComponent(App);
