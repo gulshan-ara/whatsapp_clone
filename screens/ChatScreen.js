@@ -6,7 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { ImageBackground } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import backgroundImage from "../assets/images/droplet.jpeg";
@@ -14,6 +14,12 @@ import colors from "../constants/colors";
 
 const ChatScreen = () => {
   const [messageText, setMessageText] = useState("");
+
+  // This function will render only when messageText is changed
+  const sendMessage = useCallback(() => {
+    setMessageText("");
+  }, [messageText]);
+
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -31,6 +37,7 @@ const ChatScreen = () => {
           style={styles.textBox}
           value={messageText}
           onChangeText={(text) => setMessageText(text)}
+          onSubmitEditing={sendMessage}
         />
         {messageText === "" && (
           <TouchableOpacity
@@ -42,7 +49,7 @@ const ChatScreen = () => {
         )}
         {messageText !== "" && (
           <TouchableOpacity
-            onPress={() => console.log("Pressed!")}
+            onPress={sendMessage}
             style={{...styles.mediaButton, ...styles.sendButton}}
           >
             <Feather name="send" size={18} color="white" />
