@@ -16,8 +16,14 @@ const Input = (props) => {
             style={styles.icon}
           />
         )}
-        <TextInput style={styles.input}/>
+        <TextInput style={styles.input} />
       </View>
+
+      {props.errorText && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>{props.errorText}</Text>
+        </View>
+      )}
     </View>
   );
 };
@@ -30,10 +36,10 @@ const styles = StyleSheet.create({
   },
   label: {
     marginVertical: 8,
-    fontFamily: 'bold',
+    fontFamily: "bold",
     color: colors.textColor,
     fontSize: 18,
-    letterSpacing: 0.3
+    letterSpacing: 0.3,
   },
   inputContainer: {
     width: "100%",
@@ -42,7 +48,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 10,
     flexDirection: "row",
-    alignItems: 'center'
+    alignItems: "center",
   },
   icon: {
     marginRight: 10,
@@ -52,7 +58,16 @@ const styles = StyleSheet.create({
     color: colors.textColor,
     letterSpacing: 0.3,
     flex: 1,
-    fontFamily: 'regular',
-    paddingTop: 0
-  }
+    fontFamily: "regular",
+    paddingTop: 0,
+  },
+  errorContainer: {
+    marginVertical: 5,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 13,
+    fontFamily: "regular",
+    letterSpacing: 0.3,
+  },
 });
