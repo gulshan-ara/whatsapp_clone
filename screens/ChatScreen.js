@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  Button,
-  TextInput,
-  TouchableOpacity,
-} from "react-native";
+import { View, StyleSheet, TextInput, TouchableOpacity } from "react-native";
 import React, { useCallback, useState } from "react";
 import { ImageBackground } from "react-native";
 import { Feather } from "@expo/vector-icons";
@@ -50,7 +43,7 @@ const ChatScreen = () => {
         {messageText !== "" && (
           <TouchableOpacity
             onPress={sendMessage}
-            style={{...styles.mediaButton, ...styles.sendButton}}
+            style={{ ...styles.mediaButton, ...styles.sendButton }}
           >
             <Feather name="send" size={18} color="white" />
           </TouchableOpacity>
@@ -93,6 +86,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.blue,
     borderRadius: 50,
     paddingHorizontal: 8,
-    width: 35
-  }
+    width: 35,
+  },
 });
