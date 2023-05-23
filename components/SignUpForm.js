@@ -1,15 +1,28 @@
 import {} from "react-native";
-import React from "react";
+import React, { useCallback, useReducer } from "react";
 import Input from "../components/Input";
 import SubmitButton from "../components/SubmitButton";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import { validateInput } from "../utils/actions/formActions";
+import { reducer } from "../utils/reducers/formReducer";
+
+const initialState = {
+  inputValidities: {
+    firstName: false,
+    lastName: false,
+    email: false,
+    password: false,
+  },
+  formIsValid: false,
+};
 
 const SignUpForm = () => {
-  
-  const inputChangeHandler = (inputId, inputValue) => {
-    console.log(validateInput(inputId, inputValue));
-  };
+  const [formState, dispatchFormState] = useReducer(reducer, initialState);
+
+  const inputChangeHandler = useCallback((inputId, inputValue) => {
+    const result = validateInput(inputId, inputValue);
+    dispatchFormState({ inputId, validationResult: result });
+  }, [dispatchFormState]);
 
   return (
     <>
@@ -21,6 +34,7 @@ const SignUpForm = () => {
         iconSize={24}
         autoCapitalize="none"
         onInputChanged={inputChangeHandler}
+        errorText={formState.inputValidities["firstName"]}
       />
       <Input
         id="lastName"
@@ -30,6 +44,7 @@ const SignUpForm = () => {
         iconSize={24}
         autoCapitalize="none"
         onInputChanged={inputChangeHandler}
+        errorText={formState.inputValidities["lastName"]}
       />
       <Input
         id="email"
@@ -40,6 +55,7 @@ const SignUpForm = () => {
         autoCapitalize="none"
         onInputChanged={inputChangeHandler}
         keyboardType="email-address"
+        errorText={formState.inputValidities["email"]}
       />
       <Input
         id="password"
@@ -50,11 +66,13 @@ const SignUpForm = () => {
         autoCapitalize="none"
         secureTextEntry
         onInputChanged={inputChangeHandler}
+        errorText={formState.inputValidities["password"]}
       />
       <SubmitButton
         title="Sign Up"
         onPress={() => console.log("Button Pressed!")}
         style={{ marginTop: 20 }}
+        disabled={!formState.formIsValid}
       />
     </>
   );
