@@ -4,13 +4,12 @@ import MainNavigator from "./MainNavigator";
 import AuthScreen from "../screens/AuthScreen";
 
 const AppNavigator = () => {
-
   const isAuth = false;
 
   return (
     <NavigationContainer>
       {isAuth && <MainNavigator />}
-      {!isAuth && <AuthScreen/>}
+      {!isAuth && <AuthScreen />}
     </NavigationContainer>
   );
 };

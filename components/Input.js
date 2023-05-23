@@ -3,6 +3,10 @@ import React from "react";
 import colors from "../constants/colors";
 
 const Input = (props) => {
+  const onChangeText = (text) => {
+    props.onInputChanged && props.onInputChanged(props.id, text);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{props.label}</Text>
@@ -16,7 +20,7 @@ const Input = (props) => {
             style={styles.icon}
           />
         )}
-        <TextInput style={styles.input} />
+        <TextInput style={styles.input} onChangeText={onChangeText} />
       </View>
 
       {props.errorText && (
