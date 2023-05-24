@@ -58,7 +58,7 @@ const SignUpForm = () => {
   }, [error]);
 
   // authentication handler
-  const authHandler = async () => {
+  const authHandler = useCallback(async () => {
     try {
       setIsLoading(true);
       // sign up authentication code
@@ -78,7 +78,7 @@ const SignUpForm = () => {
       setError(error.message);
       setIsLoading(false);
     }
-  };
+  }, [dispatch, formState]);
 
   return (
     <>

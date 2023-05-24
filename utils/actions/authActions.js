@@ -72,41 +72,41 @@ const saveDataToStorage = (token, userId, expiryDate) => {
 }
 
 
-// export const signIn = (email, password) => {
-//   return async (dispatch) => {
-//     const app = getFirebaseApp();
-//     const auth = getAuth();
+export const signIn = (email, password) => {
+  return async (dispatch) => {
+    const app = getFirebaseApp();
+    const auth = getAuth();
 
-//     try {
-//       const result = await signInWithEmailAndPassword(
-//         auth,
-//         email,
-//         password
-//       );
-//       const { uid, stsTokenManager } = result.user;
-//       const {accessToken, expirationTime} = stsTokenManager;
+    try {
+      const result = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      const { uid, stsTokenManager } = result.user;
+      const {accessToken, expirationTime} = stsTokenManager;
 
-//       const expiryDate = new Date(expirationTime);
+      const expiryDate = new Date(expirationTime);
 
-//       const userData = await getUserData(uid);
+      const userData = await getUserData(uid);
 
-//       // redux toolkit code
-//       dispatch(authenticate({ token: accessToken, userData }));
+      // redux toolkit code
+      dispatch(authenticate({ token: accessToken, userData }));
 
-//       //storing user sign in data to device via async storage
-//       saveDataToStorage(accessToken, uid, expiryDate);
-//     } 
-//     catch (error) {
-//       console.log(error.message);
-//       const errorCode = error.code;
+      //storing user sign in data to device via async storage
+      saveDataToStorage(accessToken, uid, expiryDate);
+    } 
+    catch (error) {
+      console.log(error.message);
+      const errorCode = error.code;
 
-//       let message = "Something went wrong";
+      let message = "Something went wrong";
 
-//       if (errorCode === "auth/email-already-in-use") {
-//         message = "This email is already in use";
-//       }
+      if (errorCode === "auth/email-already-in-use") {
+        message = "This email is already in use";
+      }
 
-//       throw new Error(message);
-//     }
-//   };
-// };
+      throw new Error(message);
+    }
+  };
+};
