@@ -7,12 +7,11 @@ import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useState, useEffect } from "react";
 import * as Font from "expo-font";
 import "react-native-gesture-handler";
+import { Provider } from "react-redux";
 
 // imports from my own files!
-import ChatListScreen from "./screens/ChatListScreen";
-import ChatSettingsScreen from "./screens/ChatSettingsScreen";
-import Settings from "./screens/Settings";
 import MainNavigator from "./navigation/AppNavigator";
+import { store } from "./store/store";
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -58,9 +57,11 @@ export default function App() {
   }
 
   return (
-    <SafeAreaProvider onLayout={onLayout}>
-      <MainNavigator />
-    </SafeAreaProvider>
+    <Provider store={store}>
+      <SafeAreaProvider onLayout={onLayout}>
+        <MainNavigator />
+      </SafeAreaProvider>
+    </Provider>
   );
 }
 

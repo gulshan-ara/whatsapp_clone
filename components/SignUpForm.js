@@ -1,6 +1,7 @@
 import { ActivityIndicator, Alert } from "react-native";
 import React, { useCallback, useReducer, useState, useEffect } from "react";
 import { Feather, FontAwesome } from "@expo/vector-icons";
+import { useDispatch } from "react-redux";
 
 import Input from "../components/Input";
 import SubmitButton from "../components/SubmitButton";
@@ -8,6 +9,7 @@ import { validateInput } from "../utils/actions/formActions";
 import { reducer } from "../utils/reducers/formReducer";
 import { signUp } from "../utils/actions/authActions";
 import colors from "../constants/colors";
+
 
 // initial values of form
 const initialState = {
@@ -28,6 +30,9 @@ const initialState = {
 
 // main component
 const SignUpForm = () => {
+  // state handling using redux toolkit 
+  const dispatch = useDispatch();
+
   // state handler for error messages
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(false);
@@ -57,15 +62,18 @@ const SignUpForm = () => {
     try {
       setIsLoading(true);
       // sign up authentication code
-      await signUp(
+      const action = signUp(
         formState.inputValues.firstName,
         formState.inputValues.lastName,
         formState.inputValues.email,
         formState.inputValues.password
       );
+      
+      dispatch(action);
       // setting error to null because it's a successful signup
       setError(null);
     } catch (error) {
+      console.log(error.message);
       // updating error state because it's a unsuccessful sign up
       setError(error.message);
       setIsLoading(false);
