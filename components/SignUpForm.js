@@ -69,9 +69,10 @@ const SignUpForm = () => {
         formState.inputValues.password
       );
       
-      dispatch(action);
       // setting error to null because it's a successful signup
       setError(null);
+      await dispatch(action);
+  
     } catch (error) {
       console.log(error.message);
       // updating error state because it's a unsuccessful sign up

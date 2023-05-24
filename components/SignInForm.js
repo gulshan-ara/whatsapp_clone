@@ -1,4 +1,4 @@
-import { Alert } from "react-native";
+import { ActivityIndicator, Alert } from "react-native";
 import React, { useCallback, useReducer, useEffect, useState } from "react";
 import { Feather } from "@expo/vector-icons";
 import Input from "../components/Input";
@@ -7,6 +7,7 @@ import { validateInput } from "../utils/actions/formActions";
 import { reducer } from "../utils/reducers/formReducer";
 import { signIn } from "../utils/actions/authActions";
 import { useDispatch } from "react-redux";
+import colors from "../constants/colors";
 
 const initialState = {
   inputValues: {
@@ -53,9 +54,9 @@ const SignInForm = () => {
         formState.inputValues.password
       );
 
-      dispatch(action);
       // setting error to null because it's a successful signup
       setError(null);
+      await dispatch(action);
     } catch (error) {
       console.log(error.message);
       // updating error state because it's a unsuccessful sign up
@@ -88,12 +89,20 @@ const SignInForm = () => {
         onInputChanged={inputChangeHandler}
         errorText={formState.inputValidities["password"]}
       />
-      <SubmitButton
-        title="Sign In"
-        onPress={authHandler}
-        style={{ marginTop: 20 }}
-        disabled={!formState.formIsValid}
-      />
+      {isLoading ? (
+        <ActivityIndicator
+          size={"small"}
+          color={colors.primary}
+          style={{ marginTop: 10 }}
+        />
+      ) : (
+        <SubmitButton
+          title="Sign In"
+          onPress={authHandler}
+          style={{ marginTop: 20 }}
+          disabled={!formState.formIsValid}
+        />
+      )}
     </>
   );
 };
