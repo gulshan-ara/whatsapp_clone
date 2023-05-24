@@ -1,14 +1,12 @@
 import {} from "react-native";
 import React, { useCallback, useReducer } from "react";
+import { Feather, FontAwesome } from "@expo/vector-icons";
+
 import Input from "../components/Input";
 import SubmitButton from "../components/SubmitButton";
-import { Feather, FontAwesome } from "@expo/vector-icons";
 import { validateInput } from "../utils/actions/formActions";
 import { reducer } from "../utils/reducers/formReducer";
 import { signUp } from "../utils/actions/authActions";
-import { getFirebaseApp } from "../utils/firebaseHelper";
-
-console.log(getFirebaseApp());
 
 const initialState = {
   inputValues: {
