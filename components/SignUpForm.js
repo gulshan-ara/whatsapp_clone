@@ -1,7 +1,7 @@
 import { ActivityIndicator, Alert } from "react-native";
 import React, { useCallback, useReducer, useState, useEffect } from "react";
 import { Feather, FontAwesome } from "@expo/vector-icons";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import Input from "../components/Input";
 import SubmitButton from "../components/SubmitButton";
