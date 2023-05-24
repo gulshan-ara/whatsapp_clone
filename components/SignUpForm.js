@@ -1,5 +1,5 @@
-import {} from "react-native";
-import React, { useCallback, useReducer } from "react";
+import { ActivityIndicator, Alert } from "react-native";
+import React, { useCallback, useReducer, useState, useEffect } from "react";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 
 import Input from "../components/Input";
@@ -7,7 +7,9 @@ import SubmitButton from "../components/SubmitButton";
 import { validateInput } from "../utils/actions/formActions";
 import { reducer } from "../utils/reducers/formReducer";
 import { signUp } from "../utils/actions/authActions";
+import colors from "../constants/colors";
 
+// initial values of form
 const initialState = {
   inputValues: {
     firstName: "",
@@ -24,22 +26,51 @@ const initialState = {
   formIsValid: false,
 };
 
+// main component
 const SignUpForm = () => {
+  // state handler for error messages
+  const [error, setError] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+
+  // reducer hook for handling all form input states
   const [formState, dispatchFormState] = useReducer(reducer, initialState);
 
-  const inputChangeHandler = useCallback((inputId, inputValue) => {
-    const result = validateInput(inputId, inputValue);
-    dispatchFormState({ inputId, validationResult: result, inputValue });
-  }, [dispatchFormState]);
+  // input change handler for all form values
+  /** due to useCallback, this function only runs when any of the fields input value changes */
+  const inputChangeHandler = useCallback(
+    (inputId, inputValue) => {
+      const result = validateInput(inputId, inputValue);
+      dispatchFormState({ inputId, validationResult: result, inputValue });
+    },
+    [dispatchFormState]
+  );
 
-  const authHandler = () => {
-    signUp(
-      formState.inputValues.firstName,
-      formState.inputValues.lastName,
-      formState.inputValues.email,
-      formState.inputValues.password,
-    )
-  }
+  // useEffect hook for rendering alert if error occurs
+  useEffect(() => {
+    if (error) {
+      Alert.alert("Error : ", error);
+    }
+  }, [error]);
+
+  // authentication handler
+  const authHandler = async () => {
+    try {
+      setIsLoading(true);
+      // sign up authentication code
+      await signUp(
+        formState.inputValues.firstName,
+        formState.inputValues.lastName,
+        formState.inputValues.email,
+        formState.inputValues.password
+      );
+      // setting error to null because it's a successful signup
+      setError(null);
+    } catch (error) {
+      // updating error state because it's a unsuccessful sign up
+      setError(error.message);
+      setIsLoading(false);
+    }
+  };
 
   return (
     <>
@@ -85,12 +116,20 @@ const SignUpForm = () => {
         onInputChanged={inputChangeHandler}
         errorText={formState.inputValidities["password"]}
       />
-      <SubmitButton
-        title="Sign Up"
-        onPress={authHandler}
-        style={{ marginTop: 20 }}
-        disabled={!formState.formIsValid}
-      />
+      {isLoading ? (
+        <ActivityIndicator
+          size={"small"}
+          color={colors.primary}
+          style={{ marginTop: 10 }}
+        />
+      ) : (
+        <SubmitButton
+          title="Sign Up"
+          onPress={authHandler}
+          style={{ marginTop: 20 }}
+          disabled={!formState.formIsValid}
+        />
+      )}
     </>
   );
 };
