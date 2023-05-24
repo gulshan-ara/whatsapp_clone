@@ -12,9 +12,12 @@ import { Provider } from "react-redux";
 // imports from my own files!
 import MainNavigator from "./navigation/AppNavigator";
 import { store } from "./store/store";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
+
+// AsyncStorage.clear();
 
 export default function App() {
   const [appIsLoaded, setAppIsLoaded] = useState(false);
