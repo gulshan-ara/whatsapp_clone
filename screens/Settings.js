@@ -31,13 +31,19 @@ const Settings = () => {
   // retrieve userData from redux auth state
   const userData = useSelector((state) => state.auth.userData);
 
+  // variables
+  const firstName = userData.firstName || "";
+  const lastName = userData.lastName || "";
+  const email = userData.email || "";
+  const about = userData.about || "";
+
   // initial values of form
   const initialState = {
     inputValues: {
-      firstName: userData.firstName || "",
-      lastName: userData.lastName || "",
-      email: userData.email || "",
-      about: userData.about || "",
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      about: about,
     },
     inputValidities: {
       firstName: undefined,
@@ -59,7 +65,8 @@ const Settings = () => {
     [dispatchFormState]
   );
 
-  const saveHandler = async () => {
+  // preventing unwanted re rendering
+  const saveHandler = useCallback(async () => {
     const updatedValues = formState.inputValues;
     try {
       setIsLoading(true);
@@ -77,6 +84,18 @@ const Settings = () => {
     } finally {
       setIsLoading(false);
     }
+  }, [formState, dispatch]);
+
+  // decides whether to show the save button or not
+  const hasChanges = () => {
+    const currentValues = formState.inputValues;
+
+    return (
+      currentValues.firstName != firstName ||
+      currentValues.lastName != lastName ||
+      currentValues.email != email ||
+      currentValues.about != about
+    );
   };
 
   return (
@@ -129,7 +148,9 @@ const Settings = () => {
           initialValue={userData.about}
         />
         <View style={{ marginTop: 20 }}>
-          {showSuccessMessage && <Text style={{textAlign: 'center'}}>Saved!!</Text>}
+          {showSuccessMessage && (
+            <Text style={{ textAlign: "center" }}>Saved!!</Text>
+          )}
           {isLoading ? (
             <ActivityIndicator
               size={"small"}
@@ -137,12 +158,14 @@ const Settings = () => {
               style={{ marginTop: 10 }}
             />
           ) : (
-            <SubmitButton
-              title="Save"
-              onPress={saveHandler}
-              style={{ marginTop: 20 }}
-              disabled={!formState.formIsValid}
-            />
+            hasChanges() && (
+              <SubmitButton
+                title="Save"
+                onPress={saveHandler}
+                style={{ marginTop: 20 }}
+                disabled={!formState.formIsValid}
+              />
+            )
           )}
         </View>
         <SubmitButton
