@@ -9,6 +9,7 @@ import Input from "../components/Input";
 import { useSelector } from "react-redux";
 import colors from "../constants/colors";
 import SubmitButton from "../components/SubmitButton";
+import { updateSignedInUserDate } from "../utils/actions/authActions";
 
 const Settings = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +22,7 @@ const Settings = () => {
       firstName: userData.firstName || "",
       lastName: userData.lastName || "",
       email: userData.email || "",
-      about: userData.about || ""
+      about: userData.about || "",
     },
     inputValidities: {
       firstName: undefined,
@@ -43,7 +44,17 @@ const Settings = () => {
     [dispatchFormState]
   );
 
-  const saveHandler = () => {};
+  const saveHandler = async () => {
+    const updatedValues = formState.inputValues;
+    try {
+      setIsLoading(true);
+      await updateSignedInUserDate(userData.userId, updatedValues);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <PageContainer>
