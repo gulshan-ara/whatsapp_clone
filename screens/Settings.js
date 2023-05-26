@@ -6,12 +6,15 @@ import { Feather, FontAwesome } from "@expo/vector-icons";
 import { validateInput } from "../utils/actions/formActions";
 import { reducer } from "../utils/reducers/formReducer";
 import Input from "../components/Input";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import colors from "../constants/colors";
 import SubmitButton from "../components/SubmitButton";
-import { updateSignedInUserDate } from "../utils/actions/authActions";
+import { updateSignedInUserDate, userLogOut } from "../utils/actions/authActions";
 
 const Settings = () => {
+  // dispatch variable for passing an action in logout button
+  const dispatch = useDispatch();
+
   const [isLoading, setIsLoading] = useState(false);
   // retrieve userData from redux auth state
   const userData = useSelector((state) => state.auth.userData);
@@ -118,6 +121,13 @@ const Settings = () => {
           disabled={!formState.formIsValid}
         />
       )}
+
+      <SubmitButton
+        title="LogOut"
+        onPress={() => dispatch(userLogOut())}
+        style={{ marginTop: 20 }}
+        color={colors.red}
+      />
     </PageContainer>
   );
 };
