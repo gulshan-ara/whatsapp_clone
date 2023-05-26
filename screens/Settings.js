@@ -1,4 +1,10 @@
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import React, { useCallback, useReducer, useState } from "react";
 import PageTitle from "../components/PageTitle";
 import PageContainer from "../components/PageContainer";
@@ -9,13 +15,19 @@ import Input from "../components/Input";
 import { useDispatch, useSelector } from "react-redux";
 import colors from "../constants/colors";
 import SubmitButton from "../components/SubmitButton";
-import { updateSignedInUserDate, userLogOut } from "../utils/actions/authActions";
+import {
+  updateSignedInUserDate,
+  userLogOut,
+} from "../utils/actions/authActions";
+import { updateLoggedInUserData } from "../store/authSlice";
 
 const Settings = () => {
   // dispatch variable for passing an action in logout button
   const dispatch = useDispatch();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
   // retrieve userData from redux auth state
   const userData = useSelector((state) => state.auth.userData);
 
@@ -51,7 +63,15 @@ const Settings = () => {
     const updatedValues = formState.inputValues;
     try {
       setIsLoading(true);
+      // updating firebase db with the updated data
       await updateSignedInUserDate(userData.userId, updatedValues);
+      // updating the states in redux with the updated data
+      dispatch(updateLoggedInUserData({ newData: updatedValues }));
+      setShowSuccessMessage(true);
+
+      setTimeout(() => {
+        setShowSuccessMessage(false);
+      }, 3000);
     } catch (error) {
       console.log(error);
     } finally {
@@ -62,72 +82,76 @@ const Settings = () => {
   return (
     <PageContainer>
       <PageTitle>Settings</PageTitle>
-      <Input
-        id="firstName"
-        label="First name"
-        icon="user-o"
-        iconPack={FontAwesome}
-        iconSize={24}
-        autoCapitalize="none"
-        onInputChanged={inputChangeHandler}
-        errorText={formState.inputValidities["firstName"]}
-        initialValue={userData.firstName}
-      />
-      <Input
-        id="lastName"
-        label="Last name"
-        icon="user-o"
-        iconPack={FontAwesome}
-        iconSize={24}
-        autoCapitalize="none"
-        onInputChanged={inputChangeHandler}
-        errorText={formState.inputValidities["lastName"]}
-        initialValue={userData.lastName}
-      />
-      <Input
-        id="email"
-        label="Email"
-        icon="mail"
-        iconPack={Feather}
-        iconSize={24}
-        autoCapitalize="none"
-        onInputChanged={inputChangeHandler}
-        keyboardType="email-address"
-        errorText={formState.inputValidities["email"]}
-        initialValue={userData.email}
-      />
-      <Input
-        id="about"
-        label="About"
-        icon="user-o"
-        iconPack={FontAwesome}
-        iconSize={24}
-        autoCapitalize="none"
-        onInputChanged={inputChangeHandler}
-        errorText={formState.inputValidities["about"]}
-        initialValue={userData.about}
-      />
-      {isLoading ? (
-        <ActivityIndicator
-          size={"small"}
-          color={colors.primary}
-          style={{ marginTop: 10 }}
+      <ScrollView>
+        <Input
+          id="firstName"
+          label="First name"
+          icon="user-o"
+          iconPack={FontAwesome}
+          iconSize={24}
+          autoCapitalize="none"
+          onInputChanged={inputChangeHandler}
+          errorText={formState.inputValidities["firstName"]}
+          initialValue={userData.firstName}
         />
-      ) : (
+        <Input
+          id="lastName"
+          label="Last name"
+          icon="user-o"
+          iconPack={FontAwesome}
+          iconSize={24}
+          autoCapitalize="none"
+          onInputChanged={inputChangeHandler}
+          errorText={formState.inputValidities["lastName"]}
+          initialValue={userData.lastName}
+        />
+        <Input
+          id="email"
+          label="Email"
+          icon="mail"
+          iconPack={Feather}
+          iconSize={24}
+          autoCapitalize="none"
+          onInputChanged={inputChangeHandler}
+          keyboardType="email-address"
+          errorText={formState.inputValidities["email"]}
+          initialValue={userData.email}
+        />
+        <Input
+          id="about"
+          label="About"
+          icon="user-o"
+          iconPack={FontAwesome}
+          iconSize={24}
+          autoCapitalize="none"
+          onInputChanged={inputChangeHandler}
+          errorText={formState.inputValidities["about"]}
+          initialValue={userData.about}
+        />
+        <View style={{ marginTop: 20 }}>
+          {showSuccessMessage && <Text style={{textAlign: 'center'}}>Saved!!</Text>}
+          {isLoading ? (
+            <ActivityIndicator
+              size={"small"}
+              color={colors.primary}
+              style={{ marginTop: 10 }}
+            />
+          ) : (
+            <SubmitButton
+              title="Save"
+              onPress={saveHandler}
+              style={{ marginTop: 20 }}
+              disabled={!formState.formIsValid}
+            />
+          )}
+        </View>
         <SubmitButton
-          title="Save"
-          onPress={saveHandler}
+          title="LogOut"
+          onPress={() => dispatch(userLogOut())}
           style={{ marginTop: 20 }}
-          disabled={!formState.formIsValid}
+          color={colors.red}
         />
-      )}
-
-      <SubmitButton
-        title="LogOut"
-        onPress={() => dispatch(userLogOut())}
-        style={{ marginTop: 20 }}
-        color={colors.red}
-      />
+      </ScrollView>
     </PageContainer>
   );
 };

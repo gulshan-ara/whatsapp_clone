@@ -25,6 +25,9 @@ const authSlice = createSlice({
       state.userData = null;
       state.didTryAutoLogin = false;
     },
+    updateLoggedInUserData: (state, action) => {
+      state.userData = {...state.userData, ...action.payload.newData}
+    }
   },
 });
 
@@ -32,6 +35,7 @@ const authSlice = createSlice({
 export const authenticate = authSlice.actions.authenticate;
 export const setDidTryAutoLogin = authSlice.actions.setDidTryAutoLogin;
 export const logOut = authSlice.actions.logOut;
+export const updateLoggedInUserData = authSlice.actions.updateLoggedInUserData;
 
 // this is a property comes with createSlice method. Not the 'reducers' given above.
 export default authSlice.reducer;
