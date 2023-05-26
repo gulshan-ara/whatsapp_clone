@@ -15,7 +15,9 @@ const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
   return (
-    <Tab.Navigator screenOptions={{ headerTitle: "" }}>
+    <Tab.Navigator
+      screenOptions={{ headerTitle: "", headerShadowVisible: false }}
+    >
       <Tab.Screen
         name="ChatList"
         component={ChatListScreen}
@@ -32,9 +34,7 @@ const TabNavigator = () => {
         component={Settings}
         options={{
           tabBarIcon: () => {
-            return (
-              <Ionicons name="settings-outline" size={24} color="black" />
-            );
+            return <Ionicons name="settings-outline" size={24} color="black" />;
           },
         }}
       />
@@ -44,23 +44,23 @@ const TabNavigator = () => {
 
 const MainNavigator = () => {
   return (
-      <Stack.Navigator>
-        <Stack.Screen
-          name="Home"
-          options={{ headerShown: false }}
-          component={TabNavigator}
-        />
-        {/* <Stack.Screen
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Home"
+        options={{ headerShown: false }}
+        component={TabNavigator}
+      />
+      {/* <Stack.Screen
           name="ChatSettings"
           options={{ headerTitle: "Settings" }}
           component={ChatSettingsScreen}
         /> */}
-        <Stack.Screen
-          name="ChatScreen"
-          options={{ headerTitle: "ChatScreen" }}
-          component={ChatScreen}
-        />
-      </Stack.Navigator>
+      <Stack.Screen
+        name="ChatScreen"
+        options={{ headerTitle: "ChatScreen" }}
+        component={ChatScreen}
+      />
+    </Stack.Navigator>
   );
 };
 

@@ -117,6 +117,7 @@ export const signIn = (email, password) => {
       timer = setTimeout(() => {
         dispatch(userLogOut());
       }, miliSecondsUntilExpiry);
+
     } catch (error) {
       console.log(error.message);
       const errorCode = error.code;
