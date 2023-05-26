@@ -1,7 +1,7 @@
 import { ActivityIndicator, Alert } from "react-native";
 import React, { useCallback, useReducer, useState, useEffect } from "react";
 import { Feather, FontAwesome } from "@expo/vector-icons";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
 import Input from "../components/Input";
 import SubmitButton from "../components/SubmitButton";
@@ -30,7 +30,7 @@ const initialState = {
 
 // main component
 const SignUpForm = () => {
-  // state handling using redux toolkit 
+  // dispatch function from redux for updating states by passing actions  
   const dispatch = useDispatch();
 
   // state handler for error messages
@@ -61,7 +61,7 @@ const SignUpForm = () => {
   const authHandler = useCallback(async () => {
     try {
       setIsLoading(true);
-      // sign up authentication code
+      // sign up actions for updating the authentication states
       const action = signUp(
         formState.inputValues.firstName,
         formState.inputValues.lastName,
@@ -71,6 +71,7 @@ const SignUpForm = () => {
       
       // setting error to null because it's a successful signup
       setError(null);
+      // passing the actions to update the state by using dispatch function.
       await dispatch(action);
   
     } catch (error) {

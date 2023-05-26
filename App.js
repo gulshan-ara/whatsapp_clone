@@ -60,6 +60,7 @@ export default function App() {
   }
 
   return (
+    // Anything inside the Provider gets access to the states stored in store of redux
     <Provider store={store}>
       <SafeAreaProvider onLayout={onLayout}>
         <MainNavigator />

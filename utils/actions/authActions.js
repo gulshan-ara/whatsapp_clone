@@ -17,12 +17,18 @@ export const signUp = (firstName, lastName, email, password) => {
     const auth = getAuth();
 
     try {
+
+      // creating an user in firebase. 
       const result = await createUserWithEmailAndPassword(
         auth,
         email,
         password
       );
+
+      // firebase returns an user_id & stsTokenManager
       const { uid, stsTokenManager } = result.user;
+
+      // retrieving the token & it's expiration time from stsTokenManager got from firebase
       const { accessToken, expirationTime } = stsTokenManager;
 
       const expiryDate = new Date(expirationTime);
@@ -31,7 +37,7 @@ export const signUp = (firstName, lastName, email, password) => {
 
       const userData = await createUser(firstName, lastName, email, uid);
 
-      // redux toolkit code
+      // dispatching the token & user data because authenticate action receives these two as state.
       dispatch(authenticate({ token: accessToken, userData }));
 
       //storing user sign in data to device via async storage
