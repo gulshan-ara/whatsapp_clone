@@ -18,8 +18,7 @@ const ProfileImage = ({ size, uri }) => {
 			if (!tempUri) {
 				return;
 			}
-
-            // upload the selected image
+			// upload the selected image
 			setImage({ uri: tempUri });
 		} catch (error) {
 			console.log(error);

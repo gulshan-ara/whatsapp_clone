@@ -20,6 +20,30 @@ export const launchImagePicker = async () => {
 
 };
 
+// converting the locally uploaded image into a blob (binary large object)
+export const uploadImageAsynce = async (uri) => {
+  
+  const blob = await new Promise((resolve, reject) => {
+    // creating a request
+    const xhr = new XMLHttpRequest();
+    // sending response on load
+    xhr.onload = function () {
+      resolve(xhr.response);
+    };
+
+    // error catching block
+    xhr.onerror = function (e) {
+      console.log(e);
+      reject(new TypeError("Network request failed"));
+    };
+
+    xhr.responseType = "blob";
+    xhr.open("GET", uri, true);
+    xhr.send();
+  });
+};
+
+
 const checkMediaPermissions = async () => {
   if (Platform.OS !== "web") {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
