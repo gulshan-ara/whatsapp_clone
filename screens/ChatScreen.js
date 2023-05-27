@@ -18,7 +18,7 @@ const ChatScreen = () => {
 			<ImageBackground
 				source={backgroundImage}
 				style={styles.backgroundImage}
-			></ImageBackground>
+			/>
 			<View style={styles.inputContainer}>
 				<TouchableOpacity
 					onPress={() => console.log("Pressed!")}
