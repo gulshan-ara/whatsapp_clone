@@ -1,13 +1,18 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { FontAwesome } from "@expo/vector-icons";
 
 import userImage from "../assets/images/userImage.jpeg";
 import colors from "../constants/colors";
+import { launchImagePicker } from "../utils/imagePickerHelper";
 
 const ProfileImage = ({ size }) => {
+  const pickImage = () => {
+    launchImagePicker();
+  };
+
   return (
-    <View>
+    <TouchableOpacity onPress={pickImage}>
       <Image
         source={userImage}
         style={{ ...styles.image, width: size, height: size }}
@@ -15,7 +20,7 @@ const ProfileImage = ({ size }) => {
       <View style={styles.editIconImg}>
         <FontAwesome name="pencil" size={15} color="black" />
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -28,11 +33,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   editIconImg: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     right: 0,
     backgroundColor: colors.lightgrey,
     borderRadius: 20,
-    padding: 5
-  }
+    padding: 5,
+  },
 });
