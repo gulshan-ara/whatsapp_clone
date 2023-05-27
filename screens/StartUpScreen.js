@@ -19,7 +19,6 @@ const StartUpScreen = () => {
       }
 
       const parsedData = JSON.parse(storedAuthInfo);
-      console.log(parsedData);
 
       const { token, userId, expiryDate: expiryDateString } = parsedData;
 

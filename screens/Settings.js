@@ -20,6 +20,7 @@ import {
   userLogOut,
 } from "../utils/actions/authActions";
 import { updateLoggedInUserData } from "../store/authSlice";
+import ProfileImage from "../components/ProfileImage";
 
 const Settings = () => {
   // dispatch variable for passing an action in logout button
@@ -101,7 +102,8 @@ const Settings = () => {
   return (
     <PageContainer>
       <PageTitle>Settings</PageTitle>
-      <ScrollView>
+      <ScrollView contentContainerStyle={{alignItems: 'center'}}>
+        <ProfileImage size={80} />
         <Input
           id="firstName"
           label="First name"
