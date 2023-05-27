@@ -4,12 +4,18 @@ import { FontAwesome } from "@expo/vector-icons";
 
 import userImage from "../assets/images/userImage.jpeg";
 import colors from "../constants/colors";
-import { launchImagePicker, uploadImageAsynce } from "../utils/imagePickerHelper";
+import {
+	launchImagePicker,
+	uploadImageAsynce,
+} from "../utils/imagePickerHelper";
+import { updateSignedInUserDate } from "../utils/actions/authActions";
 
-const ProfileImage = ({ size, uri }) => {
+const ProfileImage = ({ size, uri, user_Id }) => {
 	const source = uri ? { uri: uri } : userImage;
 
 	const [image, setImage] = useState(source);
+
+	const userId = user_Id;
 
 	const pickImage = async () => {
 		try {
@@ -22,9 +28,14 @@ const ProfileImage = ({ size, uri }) => {
 			// upload image to firebase storage
 			const uploadedUri = await uploadImageAsynce(tempUri);
 
-			if(!uploadedUri) {
+			if (!uploadedUri) {
 				throw new Error("Could not upload image");
 			}
+
+			// add profile picture to users database info
+			await updateSignedInUserDate(userId, {
+				profilePicture: uploadedUri,
+			});
 
 			// upload the selected image to local device
 			setImage({ uri: uploadedUri });
