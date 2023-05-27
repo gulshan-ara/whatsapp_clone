@@ -10,103 +10,107 @@ import { useDispatch } from "react-redux";
 import colors from "../constants/colors";
 
 const initialState = {
-  inputValues: {
-    email: "",
-    password: "",
-  },
-  inputValidities: {
-    email: false,
-    password: false,
-  },
-  formIsValid: false,
+	inputValues: {
+		email: "",
+		password: "",
+	},
+	inputValidities: {
+		email: false,
+		password: false,
+	},
+	formIsValid: false,
 };
 
 const SignInForm = () => {
-  const dispatch = useDispatch();
+	const dispatch = useDispatch();
 
-  // state handler for error messages
-  const [error, setError] = useState();
-  const [isLoading, setIsLoading] = useState(false);
-  const [formState, dispatchFormState] = useReducer(reducer, initialState);
+	// state handler for error messages
+	const [error, setError] = useState();
+	const [isLoading, setIsLoading] = useState(false);
+	const [formState, dispatchFormState] = useReducer(reducer, initialState);
 
-  const inputChangeHandler = useCallback(
-    (inputId, inputValue) => {
-      const result = validateInput(inputId, inputValue);
-      dispatchFormState({ inputId, validationResult: result, inputValue });
-    },
-    [dispatchFormState]
-  );
+	const inputChangeHandler = useCallback(
+		(inputId, inputValue) => {
+			const result = validateInput(inputId, inputValue);
+			dispatchFormState({
+				inputId,
+				validationResult: result,
+				inputValue,
+			});
+		},
+		[dispatchFormState]
+	);
 
-  // useEffect hook for rendering alert if error occurs
-  useEffect(() => {
-    if (error) {
-      Alert.alert("Error : ", error);
-    }
-  }, [error]);
+	// useEffect hook for rendering alert if error occurs
+	useEffect(() => {
+		if (error) {
+			Alert.alert("Error : ", error);
+		}
+	}, [error]);
 
-  // authentication handler
-  const authHandler = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      // sign up authentication code
-      const action = signIn(
-        formState.inputValues.email,
-        formState.inputValues.password
-      );
+	// authentication handler
+	const authHandler = useCallback(async () => {
+		try {
+			setIsLoading(true);
+			// sign up authentication code
+			const action = signIn(
+				formState.inputValues.email,
+				formState.inputValues.password
+			);
 
-      // setting error to null because it's a successful signup
-      setError(null);
-      await dispatch(action);
-    } catch (error) {
-      console.log(error.message);
-      // updating error state because it's a unsuccessful sign up
-      setError(error.message);
-      setIsLoading(false);
-    }
-  }, [dispatch, formState]);
+			// setting error to null because it's a successful signup
+			setError(null);
+			await dispatch(action);
+		} catch (error) {
+			console.log(error.message);
+			// updating error state because it's a unsuccessful sign up
+			setError(error.message);
+			setIsLoading(false);
+		}
+	}, [dispatch, formState]);
 
-  return (
-    <>
-      <Input
-        id="email"
-        label="Email"
-        icon="mail"
-        iconPack={Feather}
-        iconSize={24}
-        autoCapitalize="none"
-        keyboardType="email-address"
-        onInputChanged={inputChangeHandler}
-        initialValue={formState.inputValues.email}
-        errorText={formState.inputValidities["email"]}
-      />
-      <Input
-        id="password"
-        label="Password"
-        icon="lock"
-        iconPack={Feather}
-        iconSize={24}
-        autoCapitalize="none"
-        secureTextEntry
-        onInputChanged={inputChangeHandler}
-        initialValue={formState.inputValues.password}
-        errorText={formState.inputValidities["password"]}
-      />
-      {isLoading ? (
-        <ActivityIndicator
-          size={"small"}
-          color={colors.primary}
-          style={{ marginTop: 10 }}
-        />
-      ) : (
-        <SubmitButton
-          title="Sign In"
-          onPress={authHandler}
-          style={{ marginTop: 20 }}
-          disabled={!formState.formIsValid}
-        />
-      )}
-    </>
-  );
+	return (
+		<>
+			<Input
+				id="email"
+				label="Email"
+				icon="mail"
+				iconPack={Feather}
+				iconSize={24}
+				autoCapitalize="none"
+				keyboardType="email-address"
+				onInputChanged={inputChangeHandler}
+				initialValue={formState.inputValues.email}
+				errorText={formState.inputValidities["email"]}
+			/>
+			<Input
+				id="password"
+				label="Password"
+				icon="lock"
+				iconPack={Feather}
+				iconSize={24}
+				autoCapitalize="none"
+				secureTextEntry
+				onInputChanged={inputChangeHandler}
+				initialValue={formState.inputValues.password}
+				errorText={formState.inputValidities["password"]}
+			/>
+			{isLoading ? (
+				<ActivityIndicator
+					size={"small"}
+					color={colors.primary}
+					style={{ marginTop: 10 }}
+				/>
+			) : (
+				<SubmitButton
+					title="Sign In"
+					onPress={authHandler}
+					style={{ marginTop: 20 }}
+					disabled={!formState.formIsValid}
+				/>
+			)}
+		</>
+	);
 };
 
 export default SignInForm;

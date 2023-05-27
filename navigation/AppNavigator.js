@@ -6,17 +6,19 @@ import { useSelector } from "react-redux";
 import StartUpScreen from "../screens/StartUpScreen";
 
 const AppNavigator = () => {
-  // accessing auth states from authSlice by useSelector method
-  const isAuth = useSelector(state => state.auth.token !== null && state.auth.token !== "");
-  const didTryAutoLogin = useSelector(state => state.auth.didTryAutoLogin);
+	// accessing auth states from authSlice by useSelector method
+	const isAuth = useSelector(
+		(state) => state.auth.token !== null && state.auth.token !== ""
+	);
+	const didTryAutoLogin = useSelector((state) => state.auth.didTryAutoLogin);
 
-  return (
-    <NavigationContainer>
-      {isAuth && <MainNavigator />}
-      {!isAuth && didTryAutoLogin && <AuthScreen />}
-      {!isAuth && !didTryAutoLogin && <StartUpScreen />}
-    </NavigationContainer>
-  );
+	return (
+		<NavigationContainer>
+			{isAuth && <MainNavigator />}
+			{!isAuth && didTryAutoLogin && <AuthScreen />}
+			{!isAuth && !didTryAutoLogin && <StartUpScreen />}
+		</NavigationContainer>
+	);
 };
 
 export default AppNavigator;

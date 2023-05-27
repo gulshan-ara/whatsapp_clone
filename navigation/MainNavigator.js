@@ -14,54 +14,64 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
-  return (
-    <Tab.Navigator
-      screenOptions={{ headerTitle: "", headerShadowVisible: false }}
-    >
-      <Tab.Screen
-        name="ChatList"
-        component={ChatListScreen}
-        options={{
-          tabBarIcon: () => {
-            return (
-              <Ionicons name="chatbubble-outline" size={24} color="black" />
-            );
-          },
-        }}
-      />
-      <Tab.Screen
-        name="Settings"
-        component={Settings}
-        options={{
-          tabBarIcon: () => {
-            return <Ionicons name="settings-outline" size={24} color="black" />;
-          },
-        }}
-      />
-    </Tab.Navigator>
-  );
+	return (
+		<Tab.Navigator
+			screenOptions={{ headerTitle: "", headerShadowVisible: false }}
+		>
+			<Tab.Screen
+				name="ChatList"
+				component={ChatListScreen}
+				options={{
+					tabBarIcon: () => {
+						return (
+							<Ionicons
+								name="chatbubble-outline"
+								size={24}
+								color="black"
+							/>
+						);
+					},
+				}}
+			/>
+			<Tab.Screen
+				name="Settings"
+				component={Settings}
+				options={{
+					tabBarIcon: () => {
+						return (
+							<Ionicons
+								name="settings-outline"
+								size={24}
+								color="black"
+							/>
+						);
+					},
+				}}
+			/>
+		</Tab.Navigator>
+	);
 };
 
 const MainNavigator = () => {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Home"
-        options={{ headerShown: false }}
-        component={TabNavigator}
-      />
-      {/* <Stack.Screen
+	return (
+		<Stack.Navigator>
+			<Stack.Screen
+				name="Home"
+				options={{ headerShown: false }}
+				component={TabNavigator}
+			/>
+			{/* <Stack.Screen
           name="ChatSettings"
           options={{ headerTitle: "Settings" }}
           component={ChatSettingsScreen}
         /> */}
-      <Stack.Screen
-        name="ChatScreen"
-        options={{ headerTitle: "ChatScreen" }}
-        component={ChatScreen}
-      />
-    </Stack.Navigator>
-  );
+			<Stack.Screen
+				name="ChatScreen"
+				options={{ headerTitle: "ChatScreen" }}
+				component={ChatScreen}
+			/>
+		</Stack.Navigator>
+	);
 };
 
 export default MainNavigator;
