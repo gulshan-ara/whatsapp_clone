@@ -9,12 +9,13 @@ import {
 	uploadImageAsynce,
 } from "../utils/imagePickerHelper";
 import { updateSignedInUserDate } from "../utils/actions/authActions";
+import { updateLoggedInUserData } from "../store/authSlice";
+import { useDispatch } from "react-redux";
 
 const ProfileImage = ({ size, uri, user_Id }) => {
+	const dispatch = useDispatch();
 	const source = uri ? { uri: uri } : userImage;
-
 	const [image, setImage] = useState(source);
-
 	const userId = user_Id;
 
 	const pickImage = async () => {
@@ -32,10 +33,14 @@ const ProfileImage = ({ size, uri, user_Id }) => {
 				throw new Error("Could not upload image");
 			}
 
-			// add profile picture to users database info
-			await updateSignedInUserDate(userId, {
+			const newData = {
 				profilePicture: uploadedUri,
-			});
+			};
+			// add profile picture to users database info
+			await updateSignedInUserDate(userId, newData);
+
+			// updating global states of redux
+			dispatch(updateLoggedInUserData({ newData: newData }));
 
 			// upload the selected image to local device
 			setImage({ uri: uploadedUri });
