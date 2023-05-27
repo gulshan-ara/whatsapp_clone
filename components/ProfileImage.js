@@ -1,4 +1,11 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+	ActivityIndicator,
+	Image,
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	View,
+} from "react-native";
 import React, { useState } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 
@@ -16,6 +23,7 @@ const ProfileImage = ({ size, uri, user_Id }) => {
 	const dispatch = useDispatch();
 	const source = uri ? { uri: uri } : userImage;
 	const [image, setImage] = useState(source);
+	const [isLoading, setIsLoading] = useState(false);
 	const userId = user_Id;
 
 	const pickImage = async () => {
@@ -26,8 +34,10 @@ const ProfileImage = ({ size, uri, user_Id }) => {
 				return;
 			}
 
+			setIsLoading(true);
 			// upload image to firebase storage
 			const uploadedUri = await uploadImageAsynce(tempUri);
+			setIsLoading(false);
 
 			if (!uploadedUri) {
 				throw new Error("Could not upload image");
@@ -46,15 +56,26 @@ const ProfileImage = ({ size, uri, user_Id }) => {
 			setImage({ uri: uploadedUri });
 		} catch (error) {
 			console.log(error);
+			setIsLoading(false);
 		}
 	};
 
 	return (
 		<TouchableOpacity onPress={pickImage}>
-			<Image
-				source={image}
-				style={{ ...styles.image, width: size, height: size }}
-			/>
+			{isLoading ? (
+				<View height={size} width={size}>
+					<ActivityIndicator
+						size={'small'}
+						color={colors.primary}
+						style={styles.loadingIndicator}
+					/>
+				</View>
+			) : (
+				<Image
+					source={image}
+					style={{ ...styles.image, width: size, height: size }}
+				/>
+			)}
 			<View style={styles.editIconImg}>
 				<FontAwesome name="pencil" size={15} color="black" />
 			</View>
@@ -77,5 +98,9 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.lightgrey,
 		borderRadius: 20,
 		padding: 5,
+	},
+	loadingIndicator: {
+		justifyContent: "center",
+		alignItems: "center",
 	},
 });
