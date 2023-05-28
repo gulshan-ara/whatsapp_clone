@@ -9,7 +9,11 @@ const ChatListScreen = ({ navigation }) => {
 			headerRight: () => {
 				return (
 					<HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
-						<Item title="New Chat" iconName="create-outline"/>
+						<Item
+							title="New Chat"
+							iconName="create-outline"
+							onPress={() => navigation.navigate("NewChat")}
+						/>
 					</HeaderButtons>
 				);
 			},
