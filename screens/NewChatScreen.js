@@ -5,6 +5,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import CustomHeaderButton from "../components/CustomHeaderButton";
 import PageContainer from "../components/PageContainer";
 import colors from "../constants/colors";
+import { searchUsers } from "../utils/actions/userActions";
 
 const NewChatScreen = ({ navigation }) => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -29,7 +30,7 @@ const NewChatScreen = ({ navigation }) => {
 	}, []);
 
 	useEffect(() => {
-		const delaySearch = setTimeout(() => {
+		const delaySearch = setTimeout(async () => {
 			if (!searchTerm || searchTerm === "") {
 				setUsers();
 				setNoResultsFound(false);
@@ -37,8 +38,10 @@ const NewChatScreen = ({ navigation }) => {
 			}
 
 			setIsLoading(true);
-			setUsers({});
-			setNoResultsFound(true);
+
+			const usersResult = await searchUsers(searchTerm);
+			console.log(usersResult);
+
 			setIsLoading(false);
 
 		}, 500);
