@@ -1,7 +1,21 @@
 import { Button, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
+import { HeaderButtons, Item } from "react-navigation-header-buttons";
+import CustomHeaderButton from "../components/CustomHeaderButton";
 
 const ChatListScreen = ({ navigation }) => {
+	useEffect(() => {
+		navigation.setOptions({
+			headerRight: () => {
+				return (
+					<HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+						<Item title="New Chat" iconName="create-outline"/>
+					</HeaderButtons>
+				);
+			},
+		});
+	}, []);
+
 	return (
 		<View style={styles.container}>
 			<Text style={styles.label}>ChatListScreen</Text>
