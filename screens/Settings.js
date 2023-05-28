@@ -111,6 +111,7 @@ const Settings = () => {
 					size={80}
 					uri={userData.profilePicture}
 					user_Id={userData.userId}
+					showEditButton={true}
 				/>
 				<Input
 					id="firstName"

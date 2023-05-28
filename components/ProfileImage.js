@@ -19,11 +19,12 @@ import { updateSignedInUserDate } from "../utils/actions/authActions";
 import { updateLoggedInUserData } from "../store/authSlice";
 import { useDispatch } from "react-redux";
 
-const ProfileImage = ({ size, uri, user_Id }) => {
+const ProfileImage = ({ size, uri, user_Id, showEditButton }) => {
 	const dispatch = useDispatch();
 	const source = uri ? { uri: uri } : userImage;
 	const [image, setImage] = useState(source);
 	const [isLoading, setIsLoading] = useState(false);
+	const showEditIcon = showEditButton && showEditButton === true;
 	const userId = user_Id;
 
 	const pickImage = async () => {
@@ -60,12 +61,14 @@ const ProfileImage = ({ size, uri, user_Id }) => {
 		}
 	};
 
+	const Container = showEditIcon ? TouchableOpacity : View;
+
 	return (
-		<TouchableOpacity onPress={pickImage}>
+		<Container onPress={pickImage}>
 			{isLoading ? (
 				<View height={size} width={size}>
 					<ActivityIndicator
-						size={'small'}
+						size={"small"}
 						color={colors.primary}
 						style={styles.loadingIndicator}
 					/>
@@ -76,10 +79,12 @@ const ProfileImage = ({ size, uri, user_Id }) => {
 					style={{ ...styles.image, width: size, height: size }}
 				/>
 			)}
-			<View style={styles.editIconImg}>
-				<FontAwesome name="pencil" size={15} color="black" />
-			</View>
-		</TouchableOpacity>
+			{showEditIcon && !isLoading && (
+				<View style={styles.editIconImg}>
+					<FontAwesome name="pencil" size={15} color="black" />
+				</View>
+			)}
+		</Container>
 	);
 };
 

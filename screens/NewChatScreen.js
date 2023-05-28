@@ -13,6 +13,7 @@ import CustomHeaderButton from "../components/CustomHeaderButton";
 import PageContainer from "../components/PageContainer";
 import colors from "../constants/colors";
 import { searchUsers } from "../utils/actions/userActions";
+import DataItem from "../components/DataItem";
 
 const NewChatScreen = ({ navigation }) => {
 	const [isLoading, setIsLoading] = useState(false);
@@ -49,7 +50,7 @@ const NewChatScreen = ({ navigation }) => {
 			const usersResult = await searchUsers(searchTerm);
 			setUsers(usersResult);
 
-			if(Object.keys(usersResult).length === 0){
+			if (Object.keys(usersResult).length === 0) {
 				setNoResultsFound(true);
 			} else {
 				setNoResultsFound(false);
@@ -85,7 +86,14 @@ const NewChatScreen = ({ navigation }) => {
 					data={Object.keys(users)}
 					renderItem={(itemData) => {
 						const userId = itemData.item;
-						return <Text>{userId}</Text>;
+						const userData = users[userId];
+						return (
+							<DataItem 
+								title={`${userData.firstName} ${userData.lastName}`}
+								subTitle={`${userData.about}`}
+								image={userData.profilePicture}
+							/>
+						);
 					}}
 				/>
 			)}
