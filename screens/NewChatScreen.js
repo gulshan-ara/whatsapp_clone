@@ -1,4 +1,11 @@
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import {
+	ActivityIndicator,
+	FlatList,
+	StyleSheet,
+	Text,
+	TextInput,
+	View,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { FontAwesome } from "@expo/vector-icons";
@@ -40,10 +47,15 @@ const NewChatScreen = ({ navigation }) => {
 			setIsLoading(true);
 
 			const usersResult = await searchUsers(searchTerm);
-			console.log(usersResult);
+			setUsers(usersResult);
+
+			if(Object.keys(usersResult).length === 0){
+				setNoResultsFound(true);
+			} else {
+				setNoResultsFound(false);
+			}
 
 			setIsLoading(false);
-
 		}, 500);
 
 		return () => clearTimeout(delaySearch);
@@ -61,6 +73,22 @@ const NewChatScreen = ({ navigation }) => {
 					}}
 				/>
 			</View>
+
+			{isLoading && (
+				<View style={styles.center}>
+					<ActivityIndicator size={"large"} color={colors.primary} />
+				</View>
+			)}
+
+			{!isLoading && !noResultsFound && users && (
+				<FlatList
+					data={Object.keys(users)}
+					renderItem={(itemData) => {
+						const userId = itemData.item;
+						return <Text>{userId}</Text>;
+					}}
+				/>
+			)}
 
 			{!isLoading && noResultsFound && (
 				<View style={styles.center}>
