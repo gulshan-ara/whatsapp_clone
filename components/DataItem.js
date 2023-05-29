@@ -1,11 +1,11 @@
-import { StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 import React from "react";
 import ProfileImage from "./ProfileImage";
 import colors from "../constants/colors";
 
-const DataItem = ({ title, subTitle, image }) => {
+const DataItem = ({ title, subTitle, image, onPress }) => {
 	return (
-		<TouchableWithoutFeedback>
+		<TouchableWithoutFeedback onPress={onPress}>
 			<View style={styles.container}>
 				<ProfileImage uri={image} size={40} />
 				<View style={styles.textContainer}>
