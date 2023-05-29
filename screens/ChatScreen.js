@@ -1,17 +1,44 @@
 import { View, StyleSheet, TextInput, TouchableOpacity } from "react-native";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ImageBackground } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import backgroundImage from "../assets/images/droplet.jpeg";
 import colors from "../constants/colors";
 import { useSelector } from "react-redux";
 
-const ChatScreen = ({ route }) => {
-	const storedUsers = useSelector(state => state.users.storedUsers);
-	console.log(storedUsers);
+const ChatScreen = ({ navigation, route }) => {
+	const currentUserData = useSelector((state) => state.auth.userData);
+	const storedUsers = useSelector((state) => state.users.storedUsers);
 	const [messageText, setMessageText] = useState("");
-
+	const [chatUsers, setChatUsers] = useState([]);
 	const chatData = route?.params?.newChatData;
+
+	// set the other user name as chat title
+	const getChatTitleFromName = () => {
+		// finding the other user's id from the chatUsers
+		const otherUserId = chatUsers.find(
+			(uid) => uid !== currentUserData.userId
+		);
+
+		// pulling other users data from redux state using the user id
+		const otherUserData = storedUsers[otherUserId];
+
+		// returning the users name
+		return (
+			otherUserData &&
+			`${otherUserData.firstName} ${otherUserData.lastName}`
+		);
+	};
+
+	// set chat users
+	useEffect(() => {
+		// setting the header title of chat
+		navigation.setOptions({
+			headerTitle: getChatTitleFromName(),
+		});
+
+		setChatUsers(chatData.users);
+	}, [chatUsers]);
 
 	// This function will render only when messageText is changed
 	const sendMessage = useCallback(() => {
