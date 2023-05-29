@@ -33,8 +33,11 @@ const ChatListScreen = ({ navigation, route }) => {
 		}
 
 		const chatUsers = [selectedUser, currentUserData.userId];
-		navigation.navigate("ChatScreen", { users: chatUsers });
-	}, [selectedUser]);
+
+		const navigationProps = { newChatData: { users: chatUsers } };
+
+		navigation.navigate("ChatScreen", navigationProps);
+	}, [route?.params]);
 
 	return (
 		<View style={styles.container}>
