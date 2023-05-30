@@ -7,6 +7,7 @@ import colors from "../constants/colors";
 import { useSelector } from "react-redux";
 import PageContainer from "../components/PageContainer";
 import Bubble from "../components/Bubble";
+import { createChat } from "../utils/actions/chatActions";
 
 const ChatScreen = ({ navigation, route }) => {
 	const currentUserData = useSelector((state) => state.auth.userData);
@@ -44,9 +45,21 @@ const ChatScreen = ({ navigation, route }) => {
 	}, [chatUsers]);
 
 	// This function will render only when messageText is changed
-	const sendMessage = useCallback(() => {
+	const sendMessage = useCallback(async () => {
+		try {
+			// send message logic
+			let id = chatId;
+			if(!id){
+				// no chat id, create the chat
+				id = await createChat(currentUserData.userId, route.params.newChatData);
+				setChatId(id);
+			}
+		} catch (error) {
+			console.log(error);
+		}
+
 		setMessageText("");
-	}, [messageText]);
+	}, [messageText, chatId]);
 
 	return (
 		<View style={styles.container}>
@@ -55,7 +68,9 @@ const ChatScreen = ({ navigation, route }) => {
 				style={styles.backgroundImage}
 			>
 				<PageContainer style={{ backgroundColor: "transparent" }}>
-					{!chatId && <Bubble text="This is a new chat" type="system"/>}
+					{!chatId && (
+						<Bubble text="This is a new chat" type="system" />
+					)}
 				</PageContainer>
 			</ImageBackground>
 			<View style={styles.inputContainer}>

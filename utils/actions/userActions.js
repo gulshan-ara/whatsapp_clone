@@ -9,7 +9,6 @@ import {
 	startAt,
 } from "firebase/database";
 import { getFirebaseApp } from "../firebaseHelper";
-import { async } from "validate.js";
 
 export const getUserData = async (userId) => {
 	try {
