@@ -5,12 +5,15 @@ import { Feather } from "@expo/vector-icons";
 import backgroundImage from "../assets/images/droplet.jpeg";
 import colors from "../constants/colors";
 import { useSelector } from "react-redux";
+import PageContainer from "../components/PageContainer";
+import Bubble from "../components/Bubble";
 
 const ChatScreen = ({ navigation, route }) => {
 	const currentUserData = useSelector((state) => state.auth.userData);
 	const storedUsers = useSelector((state) => state.users.storedUsers);
 	const [messageText, setMessageText] = useState("");
 	const [chatUsers, setChatUsers] = useState([]);
+	const [chatId, setChatId] = useState(route?.params?.chatId);
 	const chatData = route?.params?.newChatData;
 
 	// set the other user name as chat title
@@ -50,7 +53,11 @@ const ChatScreen = ({ navigation, route }) => {
 			<ImageBackground
 				source={backgroundImage}
 				style={styles.backgroundImage}
-			/>
+			>
+				<PageContainer style={{ backgroundColor: "transparent" }}>
+					{!chatId && <Bubble text="This is a new chat" type="system"/>}
+				</PageContainer>
+			</ImageBackground>
 			<View style={styles.inputContainer}>
 				<TouchableOpacity
 					onPress={() => console.log("Pressed!")}
