@@ -9,7 +9,7 @@ const ChatListScreen = ({ navigation, route }) => {
 	const selectedUser = route?.params?.selectedUserId;
 	const currentUserData = useSelector((state) => state.auth.userData);
 	const chatData = useSelector((state) => state.chats.chatsData);
-	console.log(chatData);
+	// console.log(chatData);
 
 	// icon on header for opening a new chat
 	useEffect(() => {

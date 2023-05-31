@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Text, View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -13,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getFirebaseApp } from "../utils/firebaseHelper";
 import { child, getDatabase, off, onValue, ref } from "firebase/database";
 import { setChatsData } from "../store/chatSlice";
+import colors from "../constants/colors";
 
 // stack navigator
 const Stack = createNativeStackNavigator();
@@ -87,6 +89,7 @@ const StackNavigator = () => {
 
 const MainNavigator = () => {
 	const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(true);
 	const signedInUserData = useSelector((state) => state.auth.userData);
 	const storedUsers = useSelector((state) => state.users.storedUsers);
 
@@ -131,8 +134,14 @@ const MainNavigator = () => {
           // after all chat data is retrieved, passing the object into redux state
 					if (chatsFoundCount >= chatIds.length) {
 						dispatch(setChatsData({ chatsData }));
+            setIsLoading(false);
 					}
+
 				});
+
+        if(chatsFoundCount === 0){
+          setIsLoading(false);
+        }
 			}
 		});
 
@@ -141,6 +150,13 @@ const MainNavigator = () => {
 			refs.forEach((ref) => off(ref));
 		};
 	}, []);
+
+
+  if(!isLoading){
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <ActivityIndicator size={'large'} color={colors.primary}/>
+    </View>
+  }
 
 	return <StackNavigator />;
 };
