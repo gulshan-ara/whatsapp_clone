@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -9,6 +9,9 @@ import ChatSettingsScreen from "../screens/ChatSettingsScreen";
 import ChatScreen from "../screens/ChatScreen";
 import NewChatScreen from "../screens/NewChatScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useSelector } from "react-redux";
+import { getFirebaseApp } from "../utils/firebaseHelper";
+import { child, getDatabase, onValue, ref } from "firebase/database";
 
 // stack navigator
 const Stack = createNativeStackNavigator();
@@ -53,7 +56,7 @@ const TabNavigator = () => {
 	);
 };
 
-const MainNavigator = () => {
+const StackNavigator = () => {
 	return (
 		<Stack.Navigator>
 			<Stack.Group>
@@ -79,6 +82,28 @@ const MainNavigator = () => {
 			</Stack.Group>
 		</Stack.Navigator>
 	);
+};
+
+const MainNavigator = () => {
+	const signedInUserData = useSelector((state) => state.auth.userData);
+	const storedUsers = useSelector((state) => state.users.storedUsers);
+
+  useEffect(() => {
+    console.log("Subscribing to firebase listeners");
+    const app = getFirebaseApp();
+    const dbRef = ref(getDatabase(app));
+    const userChatsRef = child(dbRef, `userChats/${signedInUserData.userId}`);
+
+    // whenever userChatsRef changes, the onValue function will run
+    onValue(userChatsRef, (querySnapshot) => {
+      const chatIdData = querySnapshot.val() || {};
+      const chatIds = Object.values(chatIdData);
+
+      console.log(chatIds);
+    });
+  }, []);
+
+	return <StackNavigator />;
 };
 
 export default MainNavigator;
