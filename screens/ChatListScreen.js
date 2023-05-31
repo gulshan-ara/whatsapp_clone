@@ -1,4 +1,4 @@
-import { Button, StyleSheet, Text, View } from "react-native";
+import { Button, FlatList, StyleSheet, Text, View } from "react-native";
 import React, { useEffect } from "react";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import CustomHeaderButton from "../components/CustomHeaderButton";
@@ -8,8 +8,10 @@ const ChatListScreen = ({ navigation, route }) => {
 	// checking if any user is selected or not. if selected then pass the id
 	const selectedUser = route?.params?.selectedUserId;
 	const currentUserData = useSelector((state) => state.auth.userData);
-	const chatData = useSelector((state) => state.chats.chatsData);
-	// console.log(chatData);
+	const userChats = useSelector((state) => {
+		const chatsData = state.chats.chatsData;
+		return Object.values(chatsData);
+	});
 
 	// icon on header for opening a new chat
 	useEffect(() => {
@@ -42,13 +44,15 @@ const ChatListScreen = ({ navigation, route }) => {
 	}, [route?.params]);
 
 	return (
-		<View style={styles.container}>
-			<Text style={styles.label}>ChatListScreen</Text>
-			<Button
-				title="Go to Chat Screen"
-				onPress={() => navigation.navigate("ChatScreen")}
-			/>
-		</View>
+		<FlatList
+		data={userChats}
+		renderItem={(itemData) => {
+			const chatData = itemData.item;
+			const otherUserId = chatData.users.find(uid => uid !== currentUserData.userId);
+
+			return <Text>{chatData.key}</Text>
+		}}
+		/>
 	);
 };
 
