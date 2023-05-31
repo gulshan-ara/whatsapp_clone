@@ -8,6 +8,10 @@ const ChatListScreen = ({ navigation, route }) => {
 	// checking if any user is selected or not. if selected then pass the id
 	const selectedUser = route?.params?.selectedUserId;
 	const currentUserData = useSelector((state) => state.auth.userData);
+	const storedUsers = useSelector((state) => state.users.storedUsers);
+	console.log(storedUsers);
+
+	// reading chatIds
 	const userChats = useSelector((state) => {
 		const chatsData = state.chats.chatsData;
 		return Object.values(chatsData);

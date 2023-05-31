@@ -12,9 +12,10 @@ import NewChatScreen from "../screens/NewChatScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useDispatch, useSelector } from "react-redux";
 import { getFirebaseApp } from "../utils/firebaseHelper";
-import { child, getDatabase, off, onValue, ref } from "firebase/database";
+import { child, get, getDatabase, off, onValue, ref } from "firebase/database";
 import { setChatsData } from "../store/chatSlice";
 import colors from "../constants/colors";
+import { setStoredUsers } from "../store/userSlice";
 
 // stack navigator
 const Stack = createNativeStackNavigator();
@@ -89,7 +90,7 @@ const StackNavigator = () => {
 
 const MainNavigator = () => {
 	const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(true);
+	const [isLoading, setIsLoading] = useState(true);
 	const signedInUserData = useSelector((state) => state.auth.userData);
 	const storedUsers = useSelector((state) => state.users.storedUsers);
 
@@ -112,36 +113,54 @@ const MainNavigator = () => {
 			const chatsData = {};
 			let chatsFoundCount = 0;
 
-      // looping over all chatId
+			// looping over all chatId
 			for (let i = 0; i < chatIds.length; i++) {
 				const chatId = chatIds[i];
-        // retreiving data for a chat id
+				// retreiving data for a chat id
 				const chatRef = child(dbRef, `chats/${chatId}`);
 				refs.push(chatRef);
 
-        // when chatRef changes
+				// when chatRef changes
 				onValue(chatRef, (chatSnapshot) => {
 					chatsFoundCount++;
-          // storing chat data
+					// storing chat data
 					const data = chatSnapshot.val();
 
-          // if there's a chat data then storing it into an object
+					// if there's a chat data then storing it into an object
 					if (data) {
 						data.key = chatSnapshot.key;
+
+						// get the name of user from the key
+						data.users.forEach((userId) => {
+							if (storedUsers[userId]) return;
+
+							const userRef = child(dbRef, `user/${userId}`);
+
+							get(userRef).then((userSnapshot) => {
+								const userSnapshotData = userSnapshot.val();
+								dispatch(
+									setStoredUsers({
+										newUsers: { userSnapshotData },
+									})
+								);
+							});
+
+							refs.push(userRef);
+						});
+
 						chatsData[chatSnapshot.key] = data;
 					}
 
-          // after all chat data is retrieved, passing the object into redux state
+					// after all chat data is retrieved, passing the object into redux state
 					if (chatsFoundCount >= chatIds.length) {
 						dispatch(setChatsData({ chatsData }));
-            setIsLoading(false);
+						setIsLoading(false);
 					}
-
 				});
 
-        if(chatsFoundCount === 0){
-          setIsLoading(false);
-        }
+				if (chatsFoundCount === 0) {
+					setIsLoading(false);
+				}
 			}
 		});
 
@@ -151,12 +170,13 @@ const MainNavigator = () => {
 		};
 	}, []);
 
-
-  if(!isLoading){
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <ActivityIndicator size={'large'} color={colors.primary}/>
-    </View>
-  }
+	if (!isLoading) {
+		<View
+			style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+		>
+			<ActivityIndicator size={"large"} color={colors.primary} />
+		</View>;
+	}
 
 	return <StackNavigator />;
 };
