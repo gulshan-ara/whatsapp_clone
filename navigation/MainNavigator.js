@@ -11,7 +11,7 @@ import NewChatScreen from "../screens/NewChatScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useSelector } from "react-redux";
 import { getFirebaseApp } from "../utils/firebaseHelper";
-import { child, getDatabase, onValue, ref } from "firebase/database";
+import { child, getDatabase, off, onValue, ref } from "firebase/database";
 
 // stack navigator
 const Stack = createNativeStackNavigator();
@@ -93,6 +93,7 @@ const MainNavigator = () => {
     const app = getFirebaseApp();
     const dbRef = ref(getDatabase(app));
     const userChatsRef = child(dbRef, `userChats/${signedInUserData.userId}`);
+    const refs = [userChatsRef];
 
     // whenever userChatsRef changes, the onValue function will run
     onValue(userChatsRef, (querySnapshot) => {
@@ -101,6 +102,11 @@ const MainNavigator = () => {
 
       console.log(chatIds);
     });
+
+    return () => {
+      console.log("Unsubscribing from firebase listeners");
+      refs.forEach(ref => off(ref));
+    }
   }, []);
 
 	return <StackNavigator />;
