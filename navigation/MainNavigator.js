@@ -9,9 +9,10 @@ import ChatSettingsScreen from "../screens/ChatSettingsScreen";
 import ChatScreen from "../screens/ChatScreen";
 import NewChatScreen from "../screens/NewChatScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getFirebaseApp } from "../utils/firebaseHelper";
 import { child, getDatabase, off, onValue, ref } from "firebase/database";
+import { setChatsData } from "../store/chatSlice";
 
 // stack navigator
 const Stack = createNativeStackNavigator();
@@ -85,29 +86,61 @@ const StackNavigator = () => {
 };
 
 const MainNavigator = () => {
+	const dispatch = useDispatch();
 	const signedInUserData = useSelector((state) => state.auth.userData);
 	const storedUsers = useSelector((state) => state.users.storedUsers);
 
-  useEffect(() => {
-    console.log("Subscribing to firebase listeners");
-    const app = getFirebaseApp();
-    const dbRef = ref(getDatabase(app));
-    const userChatsRef = child(dbRef, `userChats/${signedInUserData.userId}`);
-    const refs = [userChatsRef];
+	useEffect(() => {
+		console.log("Subscribing to firebase listeners");
+		const app = getFirebaseApp();
+		const dbRef = ref(getDatabase(app));
+		const userChatsRef = child(
+			dbRef,
+			`userChats/${signedInUserData.userId}`
+		);
+		const refs = [userChatsRef];
 
-    // whenever userChatsRef changes, the onValue function will run
-    onValue(userChatsRef, (querySnapshot) => {
-      const chatIdData = querySnapshot.val() || {};
-      const chatIds = Object.values(chatIdData);
+		// whenever userChatsRef changes, the onValue function will run
+		onValue(userChatsRef, (querySnapshot) => {
+			const chatIdData = querySnapshot.val() || {};
+			const chatIds = Object.values(chatIdData);
 
-      console.log(chatIds);
-    });
+			// retrieving existing chat data
+			const chatsData = {};
+			let chatsFoundCount = 0;
 
-    return () => {
-      console.log("Unsubscribing from firebase listeners");
-      refs.forEach(ref => off(ref));
-    }
-  }, []);
+      // looping over all chatId
+			for (let i = 0; i < chatIds.length; i++) {
+				const chatId = chatIds[i];
+        // retreiving data for a chat id
+				const chatRef = child(dbRef, `chats/${chatId}`);
+				refs.push(chatRef);
+
+        // when chatRef changes
+				onValue(chatRef, (chatSnapshot) => {
+					chatsFoundCount++;
+          // storing chat data
+					const data = chatSnapshot.val();
+
+          // if there's a chat data then storing it into an object
+					if (data) {
+						data.key = chatSnapshot.key;
+						chatsData[chatSnapshot.key] = data;
+					}
+
+          // after all chat data is retrieved, passing the object into redux state
+					if (chatsFoundCount >= chatIds.length) {
+						dispatch(setChatsData({ chatsData }));
+					}
+				});
+			}
+		});
+
+		return () => {
+			console.log("Unsubscribing from firebase listeners");
+			refs.forEach((ref) => off(ref));
+		};
+	}, []);
 
 	return <StackNavigator />;
 };

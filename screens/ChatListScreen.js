@@ -8,6 +8,8 @@ const ChatListScreen = ({ navigation, route }) => {
 	// checking if any user is selected or not. if selected then pass the id
 	const selectedUser = route?.params?.selectedUserId;
 	const currentUserData = useSelector((state) => state.auth.userData);
+	const chatData = useSelector((state) => state.chats.chatsData);
+	console.log(chatData);
 
 	// icon on header for opening a new chat
 	useEffect(() => {
