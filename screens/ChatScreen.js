@@ -12,10 +12,11 @@ import { createChat } from "../utils/actions/chatActions";
 const ChatScreen = ({ navigation, route }) => {
 	const currentUserData = useSelector((state) => state.auth.userData);
 	const storedUsers = useSelector((state) => state.users.storedUsers);
+	const storedChats = useSelector((state) => state.chats.chatsData);
 	const [messageText, setMessageText] = useState("");
 	const [chatUsers, setChatUsers] = useState([]);
 	const [chatId, setChatId] = useState(route?.params?.chatId);
-	const chatData = route?.params?.newChatData;
+	const chatData = (chatId && storedChats[chatId]) || route?.params?.newChatData;
 
 	// set the other user name as chat title
 	const getChatTitleFromName = () => {

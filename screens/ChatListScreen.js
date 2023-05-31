@@ -3,18 +3,22 @@ import React, { useEffect } from "react";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import CustomHeaderButton from "../components/CustomHeaderButton";
 import { useSelector } from "react-redux";
+import DataItem from "../components/DataItem";
+import PageContainer from "../components/PageContainer";
+import PageTitle from "../components/PageTitle";
 
 const ChatListScreen = ({ navigation, route }) => {
 	// checking if any user is selected or not. if selected then pass the id
 	const selectedUser = route?.params?.selectedUserId;
 	const currentUserData = useSelector((state) => state.auth.userData);
 	const storedUsers = useSelector((state) => state.users.storedUsers);
-	console.log(storedUsers);
 
 	// reading chatIds
 	const userChats = useSelector((state) => {
 		const chatsData = state.chats.chatsData;
-		return Object.values(chatsData);
+		return Object.values(chatsData).sort((a, b) => {
+			return new Date(b.updatedAt) - new Date(a.updatedAt);
+		});
 	});
 
 	// icon on header for opening a new chat
@@ -39,24 +43,44 @@ const ChatListScreen = ({ navigation, route }) => {
 		if (!selectedUser) {
 			return;
 		}
-
 		const chatUsers = [selectedUser, currentUserData.userId];
-
 		const navigationProps = { newChatData: { users: chatUsers } };
-
 		navigation.navigate("ChatScreen", navigationProps);
 	}, [route?.params]);
 
 	return (
-		<FlatList
-		data={userChats}
-		renderItem={(itemData) => {
-			const chatData = itemData.item;
-			const otherUserId = chatData.users.find(uid => uid !== currentUserData.userId);
+		<PageContainer>
+			<PageTitle>Chats</PageTitle>
+			<FlatList
+				data={userChats}
+				renderItem={(itemData) => {
+					const chatData = itemData.item;
+					const chatId = chatData.key;
+					const otherUserId = chatData.users.find(
+						(uid) => uid !== currentUserData.userId
+					);
+					const otherUser = storedUsers[otherUserId];
 
-			return <Text>{chatData.key}</Text>
-		}}
-		/>
+					if (!otherUser) return;
+
+					const title = `${otherUser.firstName} ${otherUser.lastName}`;
+					const subtitle = "This will be a message";
+					const image = otherUser.profilePicture;
+					return (
+						<DataItem
+							title={title}
+							subTitle={subtitle}
+							image={image}
+							onPress={() =>
+								navigation.navigate("ChatScreen", {
+									chatId: chatId,
+								})
+							}
+						/>
+					);
+				}}
+			/>
+		</PageContainer>
 	);
 };
 
