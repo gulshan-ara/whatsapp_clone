@@ -1,4 +1,11 @@
-import { View, StyleSheet, TextInput, TouchableOpacity } from "react-native";
+import {
+	View,
+	StyleSheet,
+	TextInput,
+	TouchableOpacity,
+	FlatList,
+	Text
+} from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { ImageBackground } from "react-native";
 import { Feather } from "@expo/vector-icons";
@@ -10,17 +17,35 @@ import Bubble from "../components/Bubble";
 import { createChat, sendTextMessage } from "../utils/actions/chatActions";
 
 const ChatScreen = ({ navigation, route }) => {
-	const currentUserData = useSelector((state) => state.auth.userData);
-	const storedUsers = useSelector((state) => state.users.storedUsers);
-	const storedChats = useSelector((state) => state.chats.chatsData);
-
 	const [messageText, setMessageText] = useState("");
 	const [chatUsers, setChatUsers] = useState([]);
 	const [errorBannerText, setErrorBannerText] = useState("");
-
 	const [chatId, setChatId] = useState(route?.params?.chatId);
+
+	const currentUserData = useSelector((state) => state.auth.userData);
+	const storedUsers = useSelector((state) => state.users.storedUsers);
+	const storedChats = useSelector((state) => state.chats.chatsData);
 	const chatData =
 		(chatId && storedChats[chatId]) || route?.params?.newChatData;
+
+	// retrieve chats for one chat only
+	const chatMessages = useSelector((state) => {
+		if (!chatId) return [];
+		const chatMessageData = state.messages.messagesData[chatId];
+		if (!chatMessageData) return [];
+
+		const messageList = [];
+		for (const key in chatMessageData) {
+			const message = chatMessageData[key];
+
+			messageList.push({
+				key,
+				...message,
+			});
+		}
+
+		return messageList;
+	});
 
 	// set the other user name as chat title
 	const getChatTitleFromName = () => {
@@ -88,8 +113,21 @@ const ChatScreen = ({ navigation, route }) => {
 					{errorBannerText !== "" && (
 						<Bubble text={errorBannerText} type="error" />
 					)}
+
+					{chatId && (
+						<FlatList
+							data={chatMessages}
+							renderItem={(itemData) => {
+								const message = itemData.item;
+								const isOurMessage = message.sentBy === currentUserData.userId;
+								const messageType = isOurMessage ? "myMessage" : "theirMessage";
+								return <Bubble text={message.text} type={messageType}/>;
+							}}
+						/>
+					)}
 				</PageContainer>
 			</ImageBackground>
+
 			<View style={styles.inputContainer}>
 				<TouchableOpacity
 					onPress={() => console.log("Pressed!")}

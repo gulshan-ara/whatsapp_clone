@@ -12,7 +12,6 @@ const ChatListScreen = ({ navigation, route }) => {
 	const selectedUser = route?.params?.selectedUserId;
 	const currentUserData = useSelector((state) => state.auth.userData);
 	const storedUsers = useSelector((state) => state.users.storedUsers);
-	const chatMessages = useSelector(state => state.messages.messagesData);
 
 	// reading chatIds
 	const userChats = useSelector((state) => {
