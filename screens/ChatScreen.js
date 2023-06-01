@@ -7,7 +7,7 @@ import colors from "../constants/colors";
 import { useSelector } from "react-redux";
 import PageContainer from "../components/PageContainer";
 import Bubble from "../components/Bubble";
-import { createChat } from "../utils/actions/chatActions";
+import { createChat, sendTextMessage } from "../utils/actions/chatActions";
 
 const ChatScreen = ({ navigation, route }) => {
 	const currentUserData = useSelector((state) => state.auth.userData);
@@ -16,7 +16,8 @@ const ChatScreen = ({ navigation, route }) => {
 	const [messageText, setMessageText] = useState("");
 	const [chatUsers, setChatUsers] = useState([]);
 	const [chatId, setChatId] = useState(route?.params?.chatId);
-	const chatData = (chatId && storedChats[chatId]) || route?.params?.newChatData;
+	const chatData =
+		(chatId && storedChats[chatId]) || route?.params?.newChatData;
 
 	// set the other user name as chat title
 	const getChatTitleFromName = () => {
@@ -50,11 +51,18 @@ const ChatScreen = ({ navigation, route }) => {
 		try {
 			// send message logic
 			let id = chatId;
-			if(!id){
+			if (!id) {
 				// no chat id, create the chat
-				id = await createChat(currentUserData.userId, route.params.newChatData);
+				id = await createChat(
+					currentUserData.userId,
+					route.params.newChatData
+				);
 				setChatId(id);
 			}
+
+			// send the text message to db
+			await sendTextMessage(chatId, currentUserData.userId, messageText);
+
 		} catch (error) {
 			console.log(error);
 		}
