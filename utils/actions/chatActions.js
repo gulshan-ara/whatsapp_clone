@@ -1,4 +1,4 @@
-import { child, getDatabase, push, ref } from "firebase/database";
+import { child, getDatabase, push, ref, update } from "firebase/database";
 import { getFirebaseApp } from "../firebaseHelper";
 
 export const createChat = async (loggedInUserId, chatData) => {
@@ -34,6 +34,16 @@ export const sendTextMessage = async (chatId, senderId, messageText) => {
         text: messageText
     }
 
+    // send message to db under 'messages' node
     await push(messageRef, messageData);
+
+    const chatRef = child(dbRef, `chats/${chatId}`);
+
+    // update the chat node
+    await update(chatRef, {
+        updatedBy: senderId,
+        updatedAt: new Date().toISOString(),
+        latestMessage: messageText
+    });
 };
 
