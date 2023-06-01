@@ -16,6 +16,7 @@ import { child, get, getDatabase, off, onValue, ref } from "firebase/database";
 import { setChatsData } from "../store/chatSlice";
 import colors from "../constants/colors";
 import { setStoredUsers } from "../store/userSlice";
+import { setChatMessages } from "../store/messagesSlice";
 
 // stack navigator
 const Stack = createNativeStackNavigator();
@@ -158,19 +159,32 @@ const MainNavigator = () => {
 					}
 				});
 
+				// retrieving messages from database & storing that in redux state
+				const messagesRef = child(dbRef, `messages/${chatId}`);
+				refs.push(messagesRef);
+
+				// when messagesRef changes
+				onValue(messagesRef, (messagesSnapshot) => {
+					const messagesData = messagesSnapshot.val();
+					// console.log(messageData);
+					dispatch(setChatMessages({ chatId: chatId, messagesData: messagesData}));
+				});
+
 				if (chatsFoundCount === 0) {
 					setIsLoading(false);
 				}
 			}
 		});
 
+		// closing db calls
 		return () => {
 			console.log("Unsubscribing from firebase listeners");
 			refs.forEach((ref) => off(ref));
 		};
 	}, []);
 
-	if (!isLoading) {
+	// onLoading view
+	if (isLoading) {
 		<View
 			style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
 		>

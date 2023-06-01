@@ -10,14 +10,14 @@ const userSlice = createSlice({
 	// reducers property contains methods for updating the states stored in initialState property.
 	reducers: {
 		setStoredUsers: (state, action) => {
-            const newUsers = action.payload.newUsers;
-            const existingUsers = state.storedUsers;
+			const newUsers = action.payload.newUsers;
+			const existingUsers = state.storedUsers;
 
-            const usersArray = Object.values(newUsers);
-            for(let i = 0; i < usersArray.length; i++){
-                const userData = usersArray[i];
-                existingUsers[userData.userId] = userData;
-            }
+			const usersArray = Object.values(newUsers);
+			for (let i = 0; i < usersArray.length; i++) {
+				const userData = usersArray[i];
+				existingUsers[userData.userId] = userData;
+			}
 			state.storedUsers = existingUsers;
 		},
 	},

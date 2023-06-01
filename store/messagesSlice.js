@@ -1,22 +1,25 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 // states and actions needed for updating the state of authentication forms.
-const chatSlice = createSlice({
-	name: "chats",
+const messagesSlice = createSlice({
+	name: "messages",
 	// initial states of the authentication form
 	initialState: {
-		chatsData: {},
+		messagesData: {},
 	},
 	// reducers property contains methods for updating the states stored in initialState property.
 	reducers: {
-		setChatsData: (state, action) => {
-			state.chatsData = action.payload.chatsData;
+		setChatMessages: (state, action) => {
+			const existingMessages = state.messagesData;
+			const { chatId, messagesData } = action.payload;
+			existingMessages[chatId] = messagesData;
+			state.messagesData = existingMessages;
 		},
 	},
 });
 
 // exporting all functions given insidde the reducers property
-export const setChatsData = chatSlice.actions.setChatsData;
+export const setChatMessages = messagesSlice.actions.setChatMessages;
 
 // this is a property comes with createSlice method. Not the 'reducers' given above.
-export default chatSlice.reducer;
+export default messagesSlice.reducer;
