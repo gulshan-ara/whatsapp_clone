@@ -14,6 +14,10 @@ const Bubble = ({ text, type }) => {
             bubbleStyle.alignItems = "center";
             bubbleStyle.marginTop = 10
             break;
+        case "error":
+            textStyle.color = "white";
+            bubbleStyle.backgroundColor = colors.red;
+            bubbleStyle.marginTop = 10
         default:
             break;
     }

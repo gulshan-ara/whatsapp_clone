@@ -10,7 +10,7 @@ const chatSlice = createSlice({
 	// reducers property contains methods for updating the states stored in initialState property.
 	reducers: {
 		setChatsData: (state, action) => {
-			state.chatsData = action.payload.chatsData;
+			state.chatsData = { ...action.payload.chatsData };
 		},
 	},
 });
