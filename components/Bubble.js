@@ -8,6 +8,21 @@ import {
 	MenuOptions,
 	MenuTrigger,
 } from "react-native-popup-menu";
+import * as Clipboard from "expo-clipboard";
+import { Feather, FontAwesome } from "@expo/vector-icons";
+
+const MenuItem = (props) => {
+	const Icon = props.iconPack ?? Feather;
+
+	return (
+		<MenuOption onSelect={props.onSelect}>
+			<View style={styles.menuItemContainer}>
+				<Text style={styles.menuText}>{props.text}</Text>
+				<Icon name={props.icon} size={18} />
+			</View>
+		</MenuOption>
+	);
+};
 
 const Bubble = ({ text, type }) => {
 	const menuRef = useRef(null);
@@ -49,6 +64,10 @@ const Bubble = ({ text, type }) => {
 			break;
 	}
 
+	const copyToClipBoard = async (text) => {
+		await Clipboard.setStringAsync(text);
+	};
+
 	return (
 		<View style={wrapperStyle}>
 			<Container
@@ -67,9 +86,18 @@ const Bubble = ({ text, type }) => {
 					<Menu name={id.current} ref={menuRef}>
 						<MenuTrigger />
 						<MenuOptions>
-							<MenuOption text="option 1" />
-							<MenuOption text="option 2" />
-							<MenuOption text="option 3" />
+							<MenuItem
+								text="Copy to Clipboard"
+								icon="copy"
+								onSelect={() => {
+									copyToClipBoard(text);
+								}}
+							/>
+							<MenuItem 
+							text="Star message" 
+							icon="star-o"
+							iconPack={FontAwesome}
+							/>
 						</MenuOptions>
 					</Menu>
 				</View>
@@ -96,5 +124,15 @@ const styles = StyleSheet.create({
 		marginBottom: 10,
 		borderColor: "#E2DACC",
 		borderWidth: 1,
+	},
+	menuItemContainer: {
+		flexDirection: "row",
+		padding: 5,
+	},
+	menuText: {
+		fontFamily: "regular",
+		letterSpacing: 0.3,
+		flex: 1,
+		fontSize: 16,
 	},
 });
