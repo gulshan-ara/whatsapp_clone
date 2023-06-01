@@ -13,6 +13,7 @@ import { Provider } from "react-redux";
 import MainNavigator from "./navigation/AppNavigator";
 import { store } from "./store/store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { MenuProvider } from "react-native-popup-menu";
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
@@ -63,7 +64,9 @@ export default function App() {
 		// Anything inside the Provider gets access to the states stored in store of redux
 		<Provider store={store}>
 			<SafeAreaProvider onLayout={onLayout}>
-				<MainNavigator />
+				<MenuProvider>
+					<MainNavigator />
+				</MenuProvider>
 			</SafeAreaProvider>
 		</Provider>
 	);

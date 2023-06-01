@@ -1,11 +1,22 @@
-import { StyleSheet, Text, View } from "react-native";
-import React from "react";
+import { StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
+import React, { useRef } from "react";
 import colors from "../constants/colors";
+import uuid from "react-native-uuid";
+import {
+	Menu,
+	MenuOption,
+	MenuOptions,
+	MenuTrigger,
+} from "react-native-popup-menu";
 
 const Bubble = ({ text, type }) => {
+	const menuRef = useRef(null);
+	const id = useRef(uuid.v4());
+
 	const wrapperStyle = { ...styles.wrapperStyle };
 	const bubbleStyle = { ...styles.container };
 	const textStyle = { ...styles.text };
+	let Container = View;
 
 	switch (type) {
 		case "system":
@@ -25,11 +36,13 @@ const Bubble = ({ text, type }) => {
 			wrapperStyle.justifyContent = "flex-end";
 			bubbleStyle.backgroundColor = "#E7FED4";
 			bubbleStyle.maxWidth = "90%";
+			Container = TouchableWithoutFeedback;
 			break;
 
 		case "theirMessage":
 			wrapperStyle.justifyContent = "flex-start";
 			bubbleStyle.maxWidth = "90%";
+			Container = TouchableWithoutFeedback;
 			break;
 
 		default:
@@ -38,9 +51,29 @@ const Bubble = ({ text, type }) => {
 
 	return (
 		<View style={wrapperStyle}>
-			<View style={bubbleStyle}>
-				<Text style={textStyle}>{text}</Text>
-			</View>
+			<Container
+				onLongPress={() => {
+					console.log(
+						menuRef.current.props.ctx.menuActions.openMenu(
+							id.current
+						)
+					);
+				}}
+				style={{ width: "100%" }}
+			>
+				<View style={bubbleStyle}>
+					<Text style={textStyle}>{text}</Text>
+
+					<Menu name={id.current} ref={menuRef}>
+						<MenuTrigger />
+						<MenuOptions>
+							<MenuOption text="option 1" />
+							<MenuOption text="option 2" />
+							<MenuOption text="option 3" />
+						</MenuOptions>
+					</Menu>
+				</View>
+			</Container>
 		</View>
 	);
 };
