@@ -11,6 +11,7 @@ import {
 import * as Clipboard from "expo-clipboard";
 import { Feather, FontAwesome } from "@expo/vector-icons";
 import { starMessage } from "../utils/actions/chatActions";
+import { useSelector } from "react-redux";
 
 const MenuItem = (props) => {
 	const Icon = props.iconPack ?? Feather;
@@ -26,6 +27,10 @@ const MenuItem = (props) => {
 };
 
 const Bubble = ({ text, type, userId, chatId, messageId }) => {
+	const starredMessages = useSelector(
+		(state) => state.messages.starredMessages[chatId] ?? {}
+	);
+	console.log(starredMessages);
 	const menuRef = useRef(null);
 	const id = useRef(uuid.v4());
 

@@ -16,7 +16,7 @@ import { child, get, getDatabase, off, onValue, ref } from "firebase/database";
 import { setChatsData } from "../store/chatSlice";
 import colors from "../constants/colors";
 import { setStoredUsers } from "../store/userSlice";
-import { setChatMessages } from "../store/messagesSlice";
+import { setChatMessages, setStarredMessage } from "../store/messagesSlice";
 
 // stack navigator
 const Stack = createNativeStackNavigator();
@@ -92,7 +92,7 @@ const StackNavigator = () => {
 const MainNavigator = () => {
 	const dispatch = useDispatch();
 	const [isLoading, setIsLoading] = useState(true);
-	const signedInUserData = useSelector((state) => state.auth.userData);
+	const currentUserData = useSelector((state) => state.auth.userData);
 	const storedUsers = useSelector((state) => state.users.storedUsers);
 
 	useEffect(() => {
@@ -101,7 +101,7 @@ const MainNavigator = () => {
 		const dbRef = ref(getDatabase(app));
 		const userChatsRef = child(
 			dbRef,
-			`userChats/${signedInUserData.userId}`
+			`userChats/${currentUserData.userId}`
 		);
 		const refs = [userChatsRef];
 
@@ -167,13 +167,28 @@ const MainNavigator = () => {
 				onValue(messagesRef, (messagesSnapshot) => {
 					const messagesData = messagesSnapshot.val();
 					// console.log(messageData);
-					dispatch(setChatMessages({ chatId: chatId, messagesData: messagesData}));
+					dispatch(
+						setChatMessages({
+							chatId: chatId,
+							messagesData: messagesData,
+						})
+					);
 				});
 
 				if (chatsFoundCount === 0) {
 					setIsLoading(false);
 				}
 			}
+		});
+
+		const userStarredMessagesRef = child(
+			dbRef,
+			`userStarredMessages/${currentUserData.userId}`
+		);
+		refs.push(userStarredMessagesRef);
+		onValue(userStarredMessagesRef, (querySnapshot) => {
+			const starredMessages = querySnapshot.val() ?? {};
+			dispatch(setStarredMessage({ starredMessages }));
 		});
 
 		// closing db calls
