@@ -10,6 +10,7 @@ import {
 } from "react-native-popup-menu";
 import * as Clipboard from "expo-clipboard";
 import { Feather, FontAwesome } from "@expo/vector-icons";
+import { starMessage } from "../utils/actions/chatActions";
 
 const MenuItem = (props) => {
 	const Icon = props.iconPack ?? Feather;
@@ -24,7 +25,7 @@ const MenuItem = (props) => {
 	);
 };
 
-const Bubble = ({ text, type }) => {
+const Bubble = ({ text, type, userId, chatId, messageId }) => {
 	const menuRef = useRef(null);
 	const id = useRef(uuid.v4());
 
@@ -93,10 +94,13 @@ const Bubble = ({ text, type }) => {
 									copyToClipBoard(text);
 								}}
 							/>
-							<MenuItem 
-							text="Star message" 
-							icon="star-o"
-							iconPack={FontAwesome}
+							<MenuItem
+								text="Star message"
+								icon="star-o"
+								iconPack={FontAwesome}
+								onSelect={() => {
+									starMessage(messageId, chatId, userId);
+								}}
 							/>
 						</MenuOptions>
 					</Menu>

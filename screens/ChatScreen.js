@@ -4,7 +4,7 @@ import {
 	TextInput,
 	TouchableOpacity,
 	FlatList,
-	Text
+	Text,
 } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { ImageBackground } from "react-native";
@@ -119,9 +119,22 @@ const ChatScreen = ({ navigation, route }) => {
 							data={chatMessages}
 							renderItem={(itemData) => {
 								const message = itemData.item;
-								const isOurMessage = message.sentBy === currentUserData.userId;
-								const messageType = isOurMessage ? "myMessage" : "theirMessage";
-								return <Bubble text={message.text} type={messageType}/>;
+								const isOurMessage =
+									message.sentBy === currentUserData.userId;
+
+								const messageType = isOurMessage
+									? "myMessage"
+									: "theirMessage";
+									
+								return (
+									<Bubble
+										text={message.text}
+										type={messageType}
+										userId={currentUserData.userId}
+										chatId={chatId}
+										messageId={message.key}
+									/>
+								);
 							}}
 						/>
 					)}
