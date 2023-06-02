@@ -125,7 +125,7 @@ const ChatScreen = ({ navigation, route }) => {
 								const messageType = isOurMessage
 									? "myMessage"
 									: "theirMessage";
-									
+
 								return (
 									<Bubble
 										text={message.text}
@@ -133,6 +133,7 @@ const ChatScreen = ({ navigation, route }) => {
 										userId={currentUserData.userId}
 										chatId={chatId}
 										messageId={message.key}
+										date={message.sentAt}
 									/>
 								);
 							}}

@@ -13,6 +13,17 @@ import { Feather, FontAwesome } from "@expo/vector-icons";
 import { starMessage } from "../utils/actions/chatActions";
 import { useSelector } from "react-redux";
 
+const formatAmPm = (dateString) => {
+	const date = new Date(dateString);
+	let hours = date.getHours();
+	let minutes = date.getMinutes();
+	let ampm = hours >= 12 ? "pm" : "am";
+	hours = hours % 12;
+	hours = hours ? hours : 12;
+	minutes = minutes < 10 ? "0" + minutes : minutes;
+	return hours + " : " + minutes + " " + ampm;
+};
+
 const MenuItem = (props) => {
 	const Icon = props.iconPack ?? Feather;
 
@@ -26,18 +37,19 @@ const MenuItem = (props) => {
 	);
 };
 
-const Bubble = ({ text, type, userId, chatId, messageId }) => {
+const Bubble = ({ text, type, userId, chatId, messageId, date }) => {
 	const starredMessages = useSelector(
 		(state) => state.messages.starredMessages[chatId] ?? {}
 	);
-	console.log(starredMessages);
 	const menuRef = useRef(null);
 	const id = useRef(uuid.v4());
+	let isUserMessage = false;
 
 	const wrapperStyle = { ...styles.wrapperStyle };
 	const bubbleStyle = { ...styles.container };
 	const textStyle = { ...styles.text };
 	let Container = View;
+	const dateString = formatAmPm(date);
 
 	switch (type) {
 		case "system":
@@ -58,12 +70,14 @@ const Bubble = ({ text, type, userId, chatId, messageId }) => {
 			bubbleStyle.backgroundColor = "#E7FED4";
 			bubbleStyle.maxWidth = "90%";
 			Container = TouchableWithoutFeedback;
+			isUserMessage = true;
 			break;
 
 		case "theirMessage":
 			wrapperStyle.justifyContent = "flex-start";
 			bubbleStyle.maxWidth = "90%";
 			Container = TouchableWithoutFeedback;
+			isUserMessage = true;
 			break;
 
 		default:
@@ -73,6 +87,8 @@ const Bubble = ({ text, type, userId, chatId, messageId }) => {
 	const copyToClipBoard = async (text) => {
 		await Clipboard.setStringAsync(text);
 	};
+
+	const isStarred = isUserMessage && starredMessages[messageId] !== undefined;
 
 	return (
 		<View style={wrapperStyle}>
@@ -88,6 +104,19 @@ const Bubble = ({ text, type, userId, chatId, messageId }) => {
 			>
 				<View style={bubbleStyle}>
 					<Text style={textStyle}>{text}</Text>
+					{dateString && (
+						<View style={styles.timeContainer}>
+							<Text style={styles.time}>{dateString}</Text>
+							{isStarred && (
+								<FontAwesome
+									name="star"
+									size={14}
+									color={colors.textColor}
+									style={{ marginLeft: 5 }}
+								/>
+							)}
+						</View>
+					)}
 
 					<Menu name={id.current} ref={menuRef}>
 						<MenuTrigger />
@@ -100,8 +129,10 @@ const Bubble = ({ text, type, userId, chatId, messageId }) => {
 								}}
 							/>
 							<MenuItem
-								text="Star message"
-								icon="star-o"
+								text={`${
+									isStarred ? "Unstar" : "Star"
+								} Message`}
+								icon={isStarred ? "star" : "star-o"}
 								iconPack={FontAwesome}
 								onSelect={() => {
 									starMessage(messageId, chatId, userId);
@@ -143,5 +174,15 @@ const styles = StyleSheet.create({
 		letterSpacing: 0.3,
 		flex: 1,
 		fontSize: 16,
+	},
+	timeContainer: {
+		flexDirection: "row",
+		justifyContent: "flex-end",
+	},
+	time: {
+		fontSize: 12,
+		fontFamily: "regular",
+		letterSpacing: 0.3,
+		color: colors.grey,
 	},
 });
