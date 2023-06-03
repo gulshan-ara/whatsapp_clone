@@ -91,9 +91,10 @@ const ChatScreen = ({ navigation, route }) => {
 			}
 
 			// send the text message to db
-			await sendTextMessage(chatId, currentUserData.userId, messageText);
+			await sendTextMessage(chatId, currentUserData.userId, messageText, replyingTo && replyingTo.key);
 
 			setMessageText("");
+			setReplyingTo(null);
 		} catch (error) {
 			console.log(error);
 			setErrorBannerText("Message failed to send");
@@ -148,6 +149,7 @@ const ChatScreen = ({ navigation, route }) => {
 						<ReplyTo 
 							text={replyingTo.text}
 							user={storedUsers[replyingTo.sentBy]}
+							onCancel={() => setReplyingTo(null)}
 						/>
 					)
 				}
