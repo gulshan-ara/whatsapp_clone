@@ -91,7 +91,12 @@ const ChatScreen = ({ navigation, route }) => {
 			}
 
 			// send the text message to db
-			await sendTextMessage(chatId, currentUserData.userId, messageText, replyingTo && replyingTo.key);
+			await sendTextMessage(
+				chatId,
+				currentUserData.userId,
+				messageText,
+				replyingTo && replyingTo.key
+			);
 
 			setMessageText("");
 			setReplyingTo(null);
@@ -138,21 +143,25 @@ const ChatScreen = ({ navigation, route }) => {
 										messageId={message.key}
 										date={message.sentAt}
 										setReply={() => setReplyingTo(message)}
+										replyingTo={
+											message.replyTo &&
+											chatMessages.find(
+												(i) => i.key === message.replyTo
+											)
+										}
 									/>
 								);
 							}}
 						/>
 					)}
 				</PageContainer>
-				{
-					replyingTo && (
-						<ReplyTo 
-							text={replyingTo.text}
-							user={storedUsers[replyingTo.sentBy]}
-							onCancel={() => setReplyingTo(null)}
-						/>
-					)
-				}
+				{replyingTo && (
+					<ReplyTo
+						text={replyingTo.text}
+						user={storedUsers[replyingTo.sentBy]}
+						onCancel={() => setReplyingTo(null)}
+					/>
+				)}
 			</ImageBackground>
 
 			<View style={styles.inputContainer}>

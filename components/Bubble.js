@@ -37,10 +37,21 @@ const MenuItem = (props) => {
 	);
 };
 
-const Bubble = ({ text, type, userId, chatId, messageId, date, setReply }) => {
+const Bubble = ({
+	text,
+	type,
+	userId,
+	chatId,
+	messageId,
+	date,
+	setReply,
+	replyingTo,
+	name,
+}) => {
 	const starredMessages = useSelector(
 		(state) => state.messages.starredMessages[chatId] ?? {}
 	);
+	const storedUsers = useSelector((state) => state.users.storedUsers);
 	const menuRef = useRef(null);
 	const id = useRef(uuid.v4());
 	let isUserMessage = false;
@@ -49,7 +60,7 @@ const Bubble = ({ text, type, userId, chatId, messageId, date, setReply }) => {
 	const bubbleStyle = { ...styles.container };
 	const textStyle = { ...styles.text };
 	let Container = View;
-	const dateString = formatAmPm(date);
+	const dateString = date && formatAmPm(date);
 
 	switch (type) {
 		case "system":
@@ -80,6 +91,10 @@ const Bubble = ({ text, type, userId, chatId, messageId, date, setReply }) => {
 			isUserMessage = true;
 			break;
 
+		case "reply":
+			bubbleStyle.backgroundColor = "#F2F2F2";
+			break;
+
 		default:
 			break;
 	}
@@ -88,6 +103,7 @@ const Bubble = ({ text, type, userId, chatId, messageId, date, setReply }) => {
 		await Clipboard.setStringAsync(text);
 	};
 
+	const replyingToUser = replyingTo && storedUsers[replyingTo.sentBy];
 	const isStarred = isUserMessage && starredMessages[messageId] !== undefined;
 
 	return (
@@ -103,7 +119,24 @@ const Bubble = ({ text, type, userId, chatId, messageId, date, setReply }) => {
 				style={{ width: "100%" }}
 			>
 				<View style={bubbleStyle}>
+					{name && (
+						<Text
+							style={{ letterSpacing: 0.3, fontFamily: "medium" }}
+						>
+							{name}
+						</Text>
+					)}
+
+					{replyingToUser && (
+						<Bubble
+							type="reply"
+							text={replyingTo.text}
+							name={`${replyingToUser.firstName} ${replyingToUser.lastName}`}
+						/>
+					)}
+
 					<Text style={textStyle}>{text}</Text>
+
 					{dateString && (
 						<View style={styles.timeContainer}>
 							<Text style={styles.time}>{dateString}</Text>
