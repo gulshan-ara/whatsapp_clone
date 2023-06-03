@@ -15,11 +15,13 @@ import { useSelector } from "react-redux";
 import PageContainer from "../components/PageContainer";
 import Bubble from "../components/Bubble";
 import { createChat, sendTextMessage } from "../utils/actions/chatActions";
+import ReplyTo from "../components/ReplyTo";
 
 const ChatScreen = ({ navigation, route }) => {
 	const [messageText, setMessageText] = useState("");
 	const [chatUsers, setChatUsers] = useState([]);
 	const [errorBannerText, setErrorBannerText] = useState("");
+	const [replyingTo, setReplyingTo] = useState();
 	const [chatId, setChatId] = useState(route?.params?.chatId);
 
 	const currentUserData = useSelector((state) => state.auth.userData);
@@ -134,12 +136,21 @@ const ChatScreen = ({ navigation, route }) => {
 										chatId={chatId}
 										messageId={message.key}
 										date={message.sentAt}
+										setReply={() => setReplyingTo(message)}
 									/>
 								);
 							}}
 						/>
 					)}
 				</PageContainer>
+				{
+					replyingTo && (
+						<ReplyTo 
+							text={replyingTo.text}
+							user={storedUsers[replyingTo.sentBy]}
+						/>
+					)
+				}
 			</ImageBackground>
 
 			<View style={styles.inputContainer}>
