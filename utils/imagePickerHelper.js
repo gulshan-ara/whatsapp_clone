@@ -27,6 +27,30 @@ export const launchImagePicker = async () => {
 	}
 };
 
+export const openCamera = async () => {
+
+	const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+
+	if(permissionResult.granted === false){
+		console.log("No permission to access the camera");
+		return;
+	}
+
+	const result = await ImagePicker.launchCameraAsync({
+		// allows only images to pick
+		mediaTypes: ImagePicker.MediaTypeOptions.Images,
+		// allows to crop the image
+		allowsEditing: true,
+		// aspect ratio
+		aspect: [1, 1], // square image
+		quality: 1,
+	});
+
+	if (!result.canceled) {
+		return result.uri;
+	}
+};
+
 // converting the locally uploaded image into a blob (binary large object)
 export const uploadImageAsynce = async (uri, isChatImage = false) => {
 	const app = getFirebaseApp();

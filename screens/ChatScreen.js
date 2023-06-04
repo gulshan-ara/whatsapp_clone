@@ -25,6 +25,7 @@ import ReplyTo from "../components/ReplyTo";
 import { async } from "validate.js";
 import {
 	launchImagePicker,
+	openCamera,
 	uploadImageAsynce,
 } from "../utils/imagePickerHelper";
 import AwesomeAlert from "react-native-awesome-alerts";
@@ -125,6 +126,18 @@ const ChatScreen = ({ navigation, route }) => {
 	const pickImage = useCallback(async () => {
 		try {
 			const tempUri = await launchImagePicker();
+			if (!tempUri) return;
+
+			setTempImageUri(tempUri);
+		} catch (error) {
+			console.log(error);
+		}
+	}, [tempImageUri]);
+
+	// function to take photos using camera
+	const takePhotos = useCallback(async () => {
+		try {
+			const tempUri = await openCamera();
 			if (!tempUri) return;
 
 			setTempImageUri(tempUri);
@@ -240,7 +253,7 @@ const ChatScreen = ({ navigation, route }) => {
 				/>
 				{messageText === "" && (
 					<TouchableOpacity
-						onPress={() => console.log("Pressed!")}
+						onPress={takePhotos}
 						style={styles.mediaButton}
 					>
 						<Feather name="camera" size={24} color={colors.blue} />
