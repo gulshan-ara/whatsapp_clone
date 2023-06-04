@@ -16,7 +16,11 @@ import colors from "../constants/colors";
 import { useSelector } from "react-redux";
 import PageContainer from "../components/PageContainer";
 import Bubble from "../components/Bubble";
-import { createChat, sendTextMessage } from "../utils/actions/chatActions";
+import {
+	createChat,
+	sendImageMessage,
+	sendTextMessage,
+} from "../utils/actions/chatActions";
 import ReplyTo from "../components/ReplyTo";
 import { async } from "validate.js";
 import {
@@ -135,6 +139,12 @@ const ChatScreen = ({ navigation, route }) => {
 		try {
 			const uploadUrl = await uploadImageAsynce(tempImageUri, true);
 			// send image
+			await sendImageMessage(
+				chatId,
+				currentUserData.userId,
+				uploadUrl,
+				replyingTo && replyingTo.key
+			);
 
 			setTempImageUri("");
 		} catch (error) {
@@ -253,7 +263,7 @@ const ChatScreen = ({ navigation, route }) => {
 									color={colors.primary}
 								/>
 							)}
-							
+
 							{!isLoading && tempImageUri !== "" && (
 								<Image
 									source={{ uri: tempImageUri }}

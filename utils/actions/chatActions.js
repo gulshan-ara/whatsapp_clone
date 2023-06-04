@@ -1,4 +1,13 @@
-import { child, get, getDatabase, push, ref, remove, set, update } from "firebase/database";
+import {
+	child,
+	get,
+	getDatabase,
+	push,
+	ref,
+	remove,
+	set,
+	update,
+} from "firebase/database";
 import { getFirebaseApp } from "../firebaseHelper";
 
 export const createChat = async (loggedInUserId, chatData) => {
@@ -23,7 +32,31 @@ export const createChat = async (loggedInUserId, chatData) => {
 	return newChat.key;
 };
 
-export const sendTextMessage = async (chatId, senderId, messageText, replyTo) => {
+export const sendTextMessage = async (
+	chatId,
+	senderId,
+	messageText,
+	replyTo
+) => {
+	await sendMessage(chatId, senderId, messageText, null, replyTo);
+};
+
+export const sendImageMessage = async (
+	chatId,
+	senderId,
+	imageUrl,
+	replyTo
+) => {
+	await sendMessage(chatId, senderId, "Image", imageUrl, replyTo);
+};
+
+const sendMessage = async (
+	chatId,
+	senderId,
+	messageText,
+	imageUrl,
+	replyTo
+) => {
 	const app = getFirebaseApp();
 	const dbRef = ref(getDatabase(app));
 	const messageRef = child(dbRef, `messages/${chatId}`);
@@ -34,8 +67,12 @@ export const sendTextMessage = async (chatId, senderId, messageText, replyTo) =>
 		text: messageText,
 	};
 
-	if(replyTo) {
+	if (replyTo) {
 		messageData.replyTo = replyTo;
+	}
+
+	if (imageUrl) {
+		messageData.imageUrl = imageUrl;
 	}
 
 	// send message to db under 'messages' node
@@ -66,17 +103,17 @@ export const starMessage = async (messageId, chatId, userId) => {
 		if (snapShot.exists()) {
 			console.log("Unstarring!");
 
-            await remove(childRef);
+			await remove(childRef);
 		} else {
 			console.log("Starring");
 
-            const starMessageData = {
-                messageId,
-                chatId,
-                starredAt: new Date().toISOString()
-            }
+			const starMessageData = {
+				messageId,
+				chatId,
+				starredAt: new Date().toISOString(),
+			};
 
-            await set(childRef, starMessageData);
+			await set(childRef, starMessageData);
 		}
 	} catch (error) {
 		console.log(error);
