@@ -16,12 +16,16 @@ import PageContainer from "../components/PageContainer";
 import Bubble from "../components/Bubble";
 import { createChat, sendTextMessage } from "../utils/actions/chatActions";
 import ReplyTo from "../components/ReplyTo";
+import { async } from "validate.js";
+import { launchImagePicker } from "../utils/imagePickerHelper";
+import AwesomeAlert from "react-native-awesome-alerts";
 
 const ChatScreen = ({ navigation, route }) => {
 	const [messageText, setMessageText] = useState("");
 	const [chatUsers, setChatUsers] = useState([]);
 	const [errorBannerText, setErrorBannerText] = useState("");
 	const [replyingTo, setReplyingTo] = useState();
+	const [tempImageUri, setTempImageUri] = useState("");
 	const [chatId, setChatId] = useState(route?.params?.chatId);
 
 	const currentUserData = useSelector((state) => state.auth.userData);
@@ -107,6 +111,18 @@ const ChatScreen = ({ navigation, route }) => {
 		}
 	}, [messageText, chatId]);
 
+	// function to open image picker
+	const pickImage = useCallback(async () => {
+		try {
+			const tempUri = await launchImagePicker();
+			if (!tempUri) return;
+
+			setTempImageUri(tempUri);
+		} catch (error) {
+			console.log(error);
+		}
+	}, [tempImageUri]);
+
 	return (
 		<View style={styles.container}>
 			<ImageBackground
@@ -166,7 +182,7 @@ const ChatScreen = ({ navigation, route }) => {
 
 			<View style={styles.inputContainer}>
 				<TouchableOpacity
-					onPress={() => console.log("Pressed!")}
+					onPress={pickImage}
 					style={styles.mediaButton}
 				>
 					<Feather name="plus" size={24} color={colors.blue} />
@@ -193,6 +209,23 @@ const ChatScreen = ({ navigation, route }) => {
 						<Feather name="send" size={18} color="white" />
 					</TouchableOpacity>
 				)}
+
+				<AwesomeAlert
+					show={tempImageUri !== ""}
+					title="Send Image?"
+					closeOnTouchOutside={true}
+					closeOnHardwareBackPress={false}
+					showCancelButton={true}
+					showConfirmButton={true}
+					cancelText="Cancel"
+					confirmText="Send Image"
+					confirmButtonColor={colors.primary}
+					cancelButtonColor={colors.red}
+					titleStyle={styles.popupTitleStyle}
+					onCancelPressed={() => setTempImageUri("")}
+					onConfirmPressed={() => console.log("Upload!")}
+					onDismiss={() => setTempImageUri("")}
+				/>
 			</View>
 		</View>
 	);
@@ -232,5 +265,10 @@ const styles = StyleSheet.create({
 		borderRadius: 50,
 		paddingHorizontal: 8,
 		width: 35,
+	},
+	popupTitleStyle: {
+		fontFamily: "medium",
+		letterSpacing: 0.3,
+		color: colors.textColor,
 	},
 });
