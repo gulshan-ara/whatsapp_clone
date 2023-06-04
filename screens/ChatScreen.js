@@ -8,7 +8,7 @@ import {
 	Image,
 	ActivityIndicator,
 } from "react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ImageBackground } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import backgroundImage from "../assets/images/droplet.jpeg";
@@ -22,7 +22,6 @@ import {
 	sendTextMessage,
 } from "../utils/actions/chatActions";
 import ReplyTo from "../components/ReplyTo";
-import { async } from "validate.js";
 import {
 	launchImagePicker,
 	openCamera,
@@ -31,6 +30,7 @@ import {
 import AwesomeAlert from "react-native-awesome-alerts";
 
 const ChatScreen = ({ navigation, route }) => {
+	const flatList = useRef();
 	const [messageText, setMessageText] = useState("");
 	const [chatUsers, setChatUsers] = useState([]);
 	const [errorBannerText, setErrorBannerText] = useState("");
@@ -197,6 +197,9 @@ const ChatScreen = ({ navigation, route }) => {
 
 					{chatId && (
 						<FlatList
+							ref={(ref) => flatList.current = ref}
+							onContentSizeChange={() => flatList.current.scrollToEnd({animated : false})}
+							onLayout={() => flatList.current.scrollToEnd()}
 							data={chatMessages}
 							renderItem={(itemData) => {
 								const message = itemData.item;
