@@ -145,7 +145,7 @@ const ChatScreen = ({ navigation, route }) => {
 				uploadUrl,
 				replyingTo && replyingTo.key
 			);
-
+			setReplyingTo(null);
 			setTempImageUri("");
 		} catch (error) {
 			console.log(error);
@@ -189,6 +189,7 @@ const ChatScreen = ({ navigation, route }) => {
 										messageId={message.key}
 										date={message.sentAt}
 										setReply={() => setReplyingTo(message)}
+										imageUrl={message.imageUrl}
 										replyingTo={
 											message.replyTo &&
 											chatMessages.find(

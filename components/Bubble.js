@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
 import React, { useRef } from "react";
 import colors from "../constants/colors";
 import uuid from "react-native-uuid";
@@ -47,6 +47,7 @@ const Bubble = ({
 	setReply,
 	replyingTo,
 	name,
+	imageUrl,
 }) => {
 	const starredMessages = useSelector(
 		(state) => state.messages.starredMessages[chatId] ?? {}
@@ -135,7 +136,13 @@ const Bubble = ({
 						/>
 					)}
 
-					<Text style={textStyle}>{text}</Text>
+					{!imageUrl && <Text style={textStyle}>{text}</Text>}
+
+					{
+						imageUrl && (
+							<Image source={{uri : imageUrl}} style={styles.image}/>
+						)
+					}
 
 					{dateString && (
 						<View style={styles.timeContainer}>
@@ -223,4 +230,9 @@ const styles = StyleSheet.create({
 		letterSpacing: 0.3,
 		color: colors.grey,
 	},
+	image: {
+		width: 300,
+		height: 300,
+		marginBottom: 5
+	}
 });
