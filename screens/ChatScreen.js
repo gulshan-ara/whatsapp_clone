@@ -5,6 +5,8 @@ import {
 	TouchableOpacity,
 	FlatList,
 	Text,
+	Image,
+	ActivityIndicator,
 } from "react-native";
 import React, { useCallback, useEffect, useState } from "react";
 import { ImageBackground } from "react-native";
@@ -17,7 +19,10 @@ import Bubble from "../components/Bubble";
 import { createChat, sendTextMessage } from "../utils/actions/chatActions";
 import ReplyTo from "../components/ReplyTo";
 import { async } from "validate.js";
-import { launchImagePicker } from "../utils/imagePickerHelper";
+import {
+	launchImagePicker,
+	uploadImageAsynce,
+} from "../utils/imagePickerHelper";
 import AwesomeAlert from "react-native-awesome-alerts";
 
 const ChatScreen = ({ navigation, route }) => {
@@ -26,6 +31,7 @@ const ChatScreen = ({ navigation, route }) => {
 	const [errorBannerText, setErrorBannerText] = useState("");
 	const [replyingTo, setReplyingTo] = useState();
 	const [tempImageUri, setTempImageUri] = useState("");
+	const [isLoading, setIsLoading] = useState(false);
 	const [chatId, setChatId] = useState(route?.params?.chatId);
 
 	const currentUserData = useSelector((state) => state.auth.userData);
@@ -122,6 +128,20 @@ const ChatScreen = ({ navigation, route }) => {
 			console.log(error);
 		}
 	}, [tempImageUri]);
+
+	// function to upload image
+	const uploadImage = useCallback(async () => {
+		setIsLoading(true);
+		try {
+			const uploadUrl = await uploadImageAsynce(tempImageUri, true);
+			// send image
+
+			setTempImageUri("");
+		} catch (error) {
+			console.log(error);
+			setIsLoading(false);
+		}
+	}, [isLoading, tempImageUri]);
 
 	return (
 		<View style={styles.container}>
@@ -223,8 +243,25 @@ const ChatScreen = ({ navigation, route }) => {
 					cancelButtonColor={colors.red}
 					titleStyle={styles.popupTitleStyle}
 					onCancelPressed={() => setTempImageUri("")}
-					onConfirmPressed={() => console.log("Upload!")}
+					onConfirmPressed={uploadImage}
 					onDismiss={() => setTempImageUri("")}
+					customView={
+						<View>
+							{isLoading && (
+								<ActivityIndicator
+									size={"small"}
+									color={colors.primary}
+								/>
+							)}
+							
+							{!isLoading && tempImageUri !== "" && (
+								<Image
+									source={{ uri: tempImageUri }}
+									style={{ width: 200, height: 200 }}
+								/>
+							)}
+						</View>
+					}
 				/>
 			</View>
 		</View>
