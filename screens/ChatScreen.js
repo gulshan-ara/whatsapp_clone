@@ -137,16 +137,30 @@ const ChatScreen = ({ navigation, route }) => {
 	const uploadImage = useCallback(async () => {
 		setIsLoading(true);
 		try {
+			// send message logic
+			let id = chatId;
+			if (!id) {
+				// no chat id, create the chat
+				id = await createChat(
+					currentUserData.userId,
+					route.params.newChatData
+				);
+				setChatId(id);
+			}
+
 			const uploadUrl = await uploadImageAsynce(tempImageUri, true);
 			// send image
 			await sendImageMessage(
-				chatId,
+				id,
 				currentUserData.userId,
 				uploadUrl,
 				replyingTo && replyingTo.key
 			);
 			setReplyingTo(null);
-			setTempImageUri("");
+
+			setTimeout(() => {
+				setTempImageUri("");
+			}, 500);
 		} catch (error) {
 			console.log(error);
 			setIsLoading(false);
