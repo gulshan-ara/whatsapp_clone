@@ -19,7 +19,7 @@ import { updateSignedInUserDate } from "../utils/actions/authActions";
 import { updateLoggedInUserData } from "../store/authSlice";
 import { useDispatch } from "react-redux";
 
-const ProfileImage = ({ size, uri, user_Id, showEditButton }) => {
+const ProfileImage = ({ size, uri, user_Id, showEditButton, onPress }) => {
 	const dispatch = useDispatch();
 	const source = uri ? { uri: uri } : userImage;
 	const [image, setImage] = useState(source);
@@ -61,10 +61,10 @@ const ProfileImage = ({ size, uri, user_Id, showEditButton }) => {
 		}
 	};
 
-	const Container = showEditIcon ? TouchableOpacity : View;
+	const Container = onPress || showEditIcon ? TouchableOpacity : View;
 
 	return (
-		<Container onPress={pickImage}>
+		<Container onPress={onPress || pickImage}>
 			{isLoading ? (
 				<View height={size} width={size}>
 					<ActivityIndicator
