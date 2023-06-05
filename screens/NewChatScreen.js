@@ -24,10 +24,11 @@ const NewChatScreen = ({ navigation, route }) => {
 	const [noResultsFound, setNoResultsFound] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [chatName, setChatName] = useState("");
+	const [selectedUsers, setSelectedUsers] = useState([]);
 
 	const currentUserData = useSelector((state) => state.auth.userData);
 	const isGroupChat = route.params && route.params.isGroupChat;
-	const isGroupChatDisabled = chatName === "";
+	const isGroupChatDisabled = selectedUsers.length === 0 || chatName === "";
 
 	useEffect(() => {
 		navigation.setOptions({
@@ -48,7 +49,11 @@ const NewChatScreen = ({ navigation, route }) => {
 							<Item
 								title="create"
 								disabled={isGroupChatDisabled}
-								color={isGroupChatDisabled ? colors.grey : undefined}
+								color={
+									isGroupChatDisabled
+										? colors.grey
+										: undefined
+								}
 								// onPress={() => navigation.goBack()}
 							/>
 						)}
@@ -57,7 +62,7 @@ const NewChatScreen = ({ navigation, route }) => {
 			},
 			headerTitle: isGroupChat ? "Add participants" : "New Chat",
 		});
-	}, [chatName]);
+	}, [chatName, selectedUsers]);
 
 	useEffect(() => {
 		const delaySearch = setTimeout(async () => {
@@ -89,9 +94,17 @@ const NewChatScreen = ({ navigation, route }) => {
 
 	// navigate to selected users chat screen
 	const userPressed = (userId) => {
-		navigation.navigate("ChatList", {
-			selectedUserId: userId,
-		});
+		if (isGroupChat) {
+			const newSelectedUsers = selectedUsers.includes(userId)
+				? selectedUsers.filter((id) => id !== userId)
+				: selectedUsers.concat(userId);
+
+			setSelectedUsers(newSelectedUsers);
+		} else {
+			navigation.navigate("ChatList", {
+				selectedUserId: userId,
+			});
+		}
 	};
 
 	return (
@@ -140,7 +153,7 @@ const NewChatScreen = ({ navigation, route }) => {
 								image={userData.profilePicture}
 								onPress={() => userPressed(userId)}
 								type={isGroupChat ? "checkbox" : ""}
-								isChecked={true}
+								isChecked={selectedUsers.includes(userId)}
 							/>
 						);
 					}}
