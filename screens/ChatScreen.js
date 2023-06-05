@@ -28,6 +28,8 @@ import {
 	uploadImageAsynce,
 } from "../utils/imagePickerHelper";
 import AwesomeAlert from "react-native-awesome-alerts";
+import CustomHeaderButton from "../components/CustomHeaderButton";
+import { HeaderButtons, Item } from "react-navigation-header-buttons";
 
 const ChatScreen = ({ navigation, route }) => {
 	const flatList = useRef();
@@ -88,6 +90,30 @@ const ChatScreen = ({ navigation, route }) => {
 		// setting the header title of chat
 		navigation.setOptions({
 			headerTitle: title,
+			headerRight: () => {
+				return (
+					<HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+						{chatId && (
+							<Item
+								title="Chat Settings"
+								iconName="settings-outline"
+								color={colors.textColor}
+								onPress={() => {
+									chatData.isGroupChat
+										? navigation.navigate("")
+										: navigation.navigate("Contact", {
+												uid: chatUsers.find(
+													(uid) =>
+														uid !==
+														currentUserData.userId
+												),
+										  });
+								}}
+							/>
+						)}
+					</HeaderButtons>
+				);
+			},
 		});
 
 		setChatUsers(chatData.users);
