@@ -8,7 +8,7 @@ import colors from "../constants/colors";
 import { getUserChats } from "../utils/actions/userActions";
 import DataItem from "../components/DataItem";
 
-const ContactScreen = ({ route }) => {
+const ContactScreen = ({ route, navigation }) => {
 	const storedUsers = useSelector((state) => state.users.storedUsers);
 	const currentUser = storedUsers[route.params.uid];
 
@@ -53,18 +53,22 @@ const ContactScreen = ({ route }) => {
 						{commonChats.length === 1 ? "Group" : "Groups"} in
 						Common
 					</Text>
-          {
-            commonChats.map(cid => {
-              const chatData = storedChats[cid];
-              return (
-                <DataItem 
-                  key={cid}
-                  title={chatData.chatName}
-                  subTitle={chatData.latestMessage}
-                />
-              )
-            })
-          }
+					{commonChats.map((cid) => {
+						const chatData = storedChats[cid];
+						return (
+							<DataItem
+								key={cid}
+								title={chatData.chatName}
+								subTitle={chatData.latestMessage}
+								type="link"
+								onPress={() => {
+									navigation.push("ChatScreen", {
+										chatId: cid,
+									});
+								}}
+							/>
+						);
+					})}
 				</>
 			)}
 		</PageContainer>
@@ -85,10 +89,10 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		color: colors.grey,
 	},
-  heading: {
+	heading: {
 		fontFamily: "bold",
 		letterSpacing: 0.3,
 		color: colors.textColor,
-    marginVertical: 8
+		marginVertical: 8,
 	},
 });

@@ -1,8 +1,14 @@
-import { StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
+import {
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	TouchableWithoutFeedback,
+	View,
+} from "react-native";
 import React from "react";
 import ProfileImage from "./ProfileImage";
 import colors from "../constants/colors";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 
 const DataItem = ({ title, subTitle, image, onPress, type, isChecked }) => {
 	return (
@@ -17,13 +23,21 @@ const DataItem = ({ title, subTitle, image, onPress, type, isChecked }) => {
 						{subTitle}
 					</Text>
 				</View>
-                {
-                    type === "checkbox" && (
-                        <View style={{...styles.iconContainer, ...isChecked && styles.checkedStyle}}>
-                            <Ionicons name="checkmark" size={18} color="white" />
-                        </View>
-                    )
-                }
+				{type === "checkbox" && (
+					<View
+						style={{
+							...styles.iconContainer,
+							...(isChecked && styles.checkedStyle),
+						}}
+					>
+						<Ionicons name="checkmark" size={18} color="white" />
+					</View>
+				)}
+				{type === "link" && (
+					<View>
+						<Ionicons name="chevron-forward-outline" size={18} color={colors.grey} />
+					</View>
+				)}
 			</View>
 		</TouchableWithoutFeedback>
 	);
@@ -32,36 +46,36 @@ const DataItem = ({ title, subTitle, image, onPress, type, isChecked }) => {
 export default DataItem;
 
 const styles = StyleSheet.create({
-    container: {
-        flexDirection: 'row',
-        paddingVertical: 7,
-        borderBottomColor: colors.extraLightGrey,
-        borderBottomWidth: 1,
-        alignItems: 'center',
-        minHeight: 50
-    },
-    textContainer: {
-        marginLeft: 14,
-        flex: 1
-    },
-    title: {
-        fontFamily: 'medium',
-        fontSize: 16,
-        letterSpacing: 0.3
-    },
-    subTitle: {
-        fontFamily: 'regular',
-        color: colors.grey,
-        letterSpacing: 0.3
-    },
-    iconContainer: {
-        borderWidth: 1,
-        borderRadius: 50,
-        borderColor: colors.lightgrey,
-        backgroundColor: 'white'
-    },
-    checkedStyle: {
-        backgroundColor: colors.primary,
-        borderColor: 'transparent'
-    }
+	container: {
+		flexDirection: "row",
+		paddingVertical: 7,
+		borderBottomColor: colors.extraLightGrey,
+		borderBottomWidth: 1,
+		alignItems: "center",
+		minHeight: 50,
+	},
+	textContainer: {
+		marginLeft: 14,
+		flex: 1,
+	},
+	title: {
+		fontFamily: "medium",
+		fontSize: 16,
+		letterSpacing: 0.3,
+	},
+	subTitle: {
+		fontFamily: "regular",
+		color: colors.grey,
+		letterSpacing: 0.3,
+	},
+	iconContainer: {
+		borderWidth: 1,
+		borderRadius: 50,
+		borderColor: colors.lightgrey,
+		backgroundColor: "white",
+	},
+	checkedStyle: {
+		backgroundColor: colors.primary,
+		borderColor: "transparent",
+	},
 });
