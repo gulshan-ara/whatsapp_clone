@@ -128,6 +128,7 @@ const NewChatScreen = ({ navigation, route }) => {
 					<View style={styles.selectedUsersContainer}>
 						<FlatList
 							style={styles.selectedUsersList}
+							contentContainerStyle={{alignItems: 'center'}}
 							data={selectedUsers}
 							horizontal={true}
 							keyExtractor={(item) => item}
@@ -137,8 +138,10 @@ const NewChatScreen = ({ navigation, route }) => {
 								return (
 									<ProfileImage
 										size={40}
+										style={styles.selectedUserStyle}
 										uri={userData.profilePicture}
 										onPress={() => userPressed(userId)}
+										showRemoveButton={true}
 									/>
 								);
 							}}
@@ -258,4 +261,15 @@ const styles = StyleSheet.create({
 		width: "100%",
 		letterSpacing: 0.3,
 	},
+	selectedUsersContainer: {
+		height: 50,
+		justifyContent: "center",
+	},
+	selectedUsersList: {
+		height: '100%', 
+	},
+	selectedUserStyle: {
+		marginRight: 10,
+		marginBottom: 10
+	}
 });

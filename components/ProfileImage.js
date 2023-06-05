@@ -19,12 +19,21 @@ import { updateSignedInUserDate } from "../utils/actions/authActions";
 import { updateLoggedInUserData } from "../store/authSlice";
 import { useDispatch } from "react-redux";
 
-const ProfileImage = ({ size, uri, user_Id, showEditButton, onPress }) => {
+const ProfileImage = ({
+	size,
+	uri,
+	user_Id,
+	showEditButton,
+	onPress,
+	showRemoveButton,
+	style
+}) => {
 	const dispatch = useDispatch();
 	const source = uri ? { uri: uri } : userImage;
 	const [image, setImage] = useState(source);
 	const [isLoading, setIsLoading] = useState(false);
 	const showEditIcon = showEditButton && showEditButton === true;
+	const showRemoveIcon = showRemoveButton && showRemoveButton === true;
 	const userId = user_Id;
 
 	const pickImage = async () => {
@@ -64,7 +73,7 @@ const ProfileImage = ({ size, uri, user_Id, showEditButton, onPress }) => {
 	const Container = onPress || showEditIcon ? TouchableOpacity : View;
 
 	return (
-		<Container onPress={onPress || pickImage}>
+		<Container style={style} onPress={onPress || pickImage}>
 			{isLoading ? (
 				<View height={size} width={size}>
 					<ActivityIndicator
@@ -82,6 +91,12 @@ const ProfileImage = ({ size, uri, user_Id, showEditButton, onPress }) => {
 			{showEditIcon && !isLoading && (
 				<View style={styles.editIconImg}>
 					<FontAwesome name="pencil" size={15} color="black" />
+				</View>
+			)}
+
+			{showRemoveIcon && !isLoading && (
+				<View style={styles.removeIconImage}>
+					<FontAwesome name="close" size={15} color="black" />
 				</View>
 			)}
 		</Container>
@@ -103,6 +118,14 @@ const styles = StyleSheet.create({
 		backgroundColor: colors.lightgrey,
 		borderRadius: 20,
 		padding: 5,
+	},
+	removeIconImage: {
+		position: "absolute",
+		bottom: -3,
+		right: -3,
+		backgroundColor: colors.lightgrey,
+		borderRadius: 20,
+		padding: 3,
 	},
 	loadingIndicator: {
 		justifyContent: "center",
