@@ -1,4 +1,11 @@
-import { Button, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+	Button,
+	FlatList,
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	View,
+} from "react-native";
 import React, { useEffect } from "react";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import CustomHeaderButton from "../components/CustomHeaderButton";
@@ -11,6 +18,9 @@ import colors from "../constants/colors";
 const ChatListScreen = ({ navigation, route }) => {
 	// checking if any user is selected or not. if selected then pass the id
 	const selectedUser = route?.params?.selectedUserId;
+	const selectedUsersList = route?.params?.selectedUsers;
+	const chatName = route?.params?.chatName;
+
 	const currentUserData = useSelector((state) => state.auth.userData);
 	const storedUsers = useSelector((state) => state.users.storedUsers);
 
@@ -41,11 +51,26 @@ const ChatListScreen = ({ navigation, route }) => {
 
 	// chat with selected user
 	useEffect(() => {
-		if (!selectedUser) {
+		if (!selectedUser && !selectedUsersList) {
 			return;
 		}
-		const chatUsers = [selectedUser, currentUserData.userId];
-		const navigationProps = { newChatData: { users: chatUsers } };
+		const chatUsers = selectedUsersList || [selectedUser];
+
+		if (!chatUsers.includes(currentUserData.userId)) {
+			chatUsers.push(currentUserData.userId);
+		}
+
+		const navigationProps = {
+			newChatData: {
+				users: chatUsers,
+				isGroupChat: selectedUsersList !== undefined,
+			},
+		};
+
+		if(chatName) {
+			navigationProps.chatName = chatName;
+		}
+
 		navigation.navigate("ChatScreen", navigationProps);
 	}, [route?.params]);
 
@@ -54,7 +79,11 @@ const ChatListScreen = ({ navigation, route }) => {
 			<PageTitle>Chats</PageTitle>
 
 			<View>
-				<TouchableOpacity onPress={() => navigation.navigate("NewChat", {isGroupChat : true})}>
+				<TouchableOpacity
+					onPress={() =>
+						navigation.navigate("NewChat", { isGroupChat: true })
+					}
+				>
 					<Text style={styles.newGroupText}>New Group</Text>
 				</TouchableOpacity>
 			</View>

@@ -6,7 +6,7 @@ import {
 	TextInput,
 	View,
 } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 import { FontAwesome } from "@expo/vector-icons";
 import CustomHeaderButton from "../components/CustomHeaderButton";
@@ -26,7 +26,7 @@ const NewChatScreen = ({ navigation, route }) => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [chatName, setChatName] = useState("");
 	const [selectedUsers, setSelectedUsers] = useState([]);
-
+	const selectedUsersFlatList = useRef();
 	const currentUserData = useSelector((state) => state.auth.userData);
 	const storedUsers = useSelector((state) => state.users.storedUsers);
 	const isGroupChat = route.params && route.params.isGroupChat;
@@ -56,7 +56,12 @@ const NewChatScreen = ({ navigation, route }) => {
 										? colors.grey
 										: undefined
 								}
-								// onPress={() => navigation.goBack()}
+								onPress={() => {
+									navigation.navigate("ChatList", {
+										selectedUsers: selectedUsers,
+										chatName: chatName
+									});
+								}}
 							/>
 						)}
 					</HeaderButtons>
@@ -128,10 +133,15 @@ const NewChatScreen = ({ navigation, route }) => {
 					<View style={styles.selectedUsersContainer}>
 						<FlatList
 							style={styles.selectedUsersList}
-							contentContainerStyle={{alignItems: 'center'}}
+							contentContainerStyle={{ alignItems: "center" }}
 							data={selectedUsers}
 							horizontal={true}
 							keyExtractor={(item) => item}
+							ref={(ref) => (selectedUsersFlatList.current = ref)}
+							onContentSizeChange={() =>
+								selectedUsers.length > 0 &&
+								selectedUsersFlatList.current.scrollToEnd()
+							}
 							renderItem={(itemData) => {
 								const userId = itemData.item;
 								const userData = storedUsers[userId];
@@ -266,10 +276,10 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 	},
 	selectedUsersList: {
-		height: '100%', 
+		height: "100%",
 	},
 	selectedUserStyle: {
 		marginRight: 10,
-		marginBottom: 10
-	}
+		marginBottom: 10,
+	},
 });
