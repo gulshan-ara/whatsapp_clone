@@ -54,21 +54,38 @@ const ChatListScreen = ({ navigation, route }) => {
 		if (!selectedUser && !selectedUsersList) {
 			return;
 		}
-		const chatUsers = selectedUsersList || [selectedUser];
 
-		if (!chatUsers.includes(currentUserData.userId)) {
-			chatUsers.push(currentUserData.userId);
+		let chatData;
+		let navigationProps;
+
+		// finding if the user has an existing chat or not
+		if (selectedUser) {
+			chatData = userChats.find(
+				(cd) => !cd.isGroupChat && cd.users.includes(selectedUser)
+			);
 		}
 
-		const navigationProps = {
-			newChatData: {
-				users: chatUsers,
-				isGroupChat: selectedUsersList !== undefined,
-			},
-		};
+		if (chatData) {
+			// if there's existing chat, navigate to that
+			navigationProps = { chatId: chatData.key };
+			
+		} else {
+			const chatUsers = selectedUsersList || [selectedUser];
 
-		if(chatName) {
-			navigationProps.chatName = chatName;
+			if (!chatUsers.includes(currentUserData.userId)) {
+				chatUsers.push(currentUserData.userId);
+			}
+
+			navigationProps = {
+				newChatData: {
+					users: chatUsers,
+					isGroupChat: selectedUsersList !== undefined,
+				},
+			};
+
+			if (chatName) {
+				navigationProps.chatName = chatName;
+			}
 		}
 
 		navigation.navigate("ChatScreen", navigationProps);
