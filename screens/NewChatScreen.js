@@ -48,6 +48,7 @@ const NewChatScreen = ({ navigation, route }) => {
 							<Item
 								title="create"
 								disabled={isGroupChatDisabled}
+								color={isGroupChatDisabled ? colors.grey : undefined}
 								// onPress={() => navigation.goBack()}
 							/>
 						)}
@@ -56,7 +57,7 @@ const NewChatScreen = ({ navigation, route }) => {
 			},
 			headerTitle: isGroupChat ? "Add participants" : "New Chat",
 		});
-	}, []);
+	}, [chatName]);
 
 	useEffect(() => {
 		const delaySearch = setTimeout(async () => {
@@ -102,6 +103,8 @@ const NewChatScreen = ({ navigation, route }) => {
 							style={styles.textbox}
 							placeholder="Enter a name for your chat"
 							autoCorrect={false}
+							value={chatName}
+							onChangeText={(text) => setChatName(text)}
 						/>
 					</View>
 				</View>
@@ -136,6 +139,8 @@ const NewChatScreen = ({ navigation, route }) => {
 								subTitle={`${userData.about}`}
 								image={userData.profilePicture}
 								onPress={() => userPressed(userId)}
+								type={isGroupChat ? "checkbox" : ""}
+								isChecked={true}
 							/>
 						);
 					}}
