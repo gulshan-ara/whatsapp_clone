@@ -17,14 +17,17 @@ import DataItem from "../components/DataItem";
 import { useDispatch, useSelector } from "react-redux";
 import { setStoredUsers } from "../store/userSlice";
 
-const NewChatScreen = ({ navigation }) => {
+const NewChatScreen = ({ navigation, route }) => {
 	const dispatch = useDispatch();
 	const [isLoading, setIsLoading] = useState(false);
 	const [users, setUsers] = useState();
 	const [noResultsFound, setNoResultsFound] = useState(false);
 	const [searchTerm, setSearchTerm] = useState("");
+	const [chatName, setChatName] = useState("");
 
 	const currentUserData = useSelector((state) => state.auth.userData);
+	const isGroupChat = route.params && route.params.isGroupChat;
+	const isGroupChatDisabled = chatName === "";
 
 	useEffect(() => {
 		navigation.setOptions({
@@ -38,7 +41,20 @@ const NewChatScreen = ({ navigation }) => {
 					</HeaderButtons>
 				);
 			},
-			headerTitle: "New Chat",
+			headerRight: () => {
+				return (
+					<HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+						{isGroupChat && (
+							<Item
+								title="create"
+								disabled={isGroupChatDisabled}
+								// onPress={() => navigation.goBack()}
+							/>
+						)}
+					</HeaderButtons>
+				);
+			},
+			headerTitle: isGroupChat ? "Add participants" : "New Chat",
 		});
 	}, []);
 
@@ -79,6 +95,18 @@ const NewChatScreen = ({ navigation }) => {
 
 	return (
 		<PageContainer>
+			{isGroupChat && (
+				<View style={styles.chatNameContainer}>
+					<View style={styles.inputContainer}>
+						<TextInput
+							style={styles.textbox}
+							placeholder="Enter a name for your chat"
+							autoCorrect={false}
+						/>
+					</View>
+				</View>
+			)}
+
 			<View style={styles.searchContainer}>
 				<FontAwesome name="search" size={15} color={colors.lightgrey} />
 				<TextInput
@@ -169,6 +197,23 @@ const styles = StyleSheet.create({
 	noResultsIcon: {
 		color: colors.textColor,
 		fontFamily: "regular",
+		letterSpacing: 0.3,
+	},
+	chatNameContainer: {
+		paddingVertical: 10,
+	},
+	inputContainer: {
+		width: "100%",
+		paddingHorizontal: 10,
+		paddingVertical: 15,
+		backgroundColor: colors.nearlyWhite,
+		flexDirection: "row",
+		borderRadius: 2,
+	},
+	textbox: {
+		fontFamily: "regular",
+		color: colors.textColor,
+		width: "100%",
 		letterSpacing: 0.3,
 	},
 });
