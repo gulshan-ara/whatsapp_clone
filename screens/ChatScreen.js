@@ -81,11 +81,13 @@ const ChatScreen = ({ navigation, route }) => {
 		);
 	};
 
+	const title = chatData.chatName ?? getChatTitleFromName();
+
 	// set chat users
 	useEffect(() => {
 		// setting the header title of chat
 		navigation.setOptions({
-			headerTitle: getChatTitleFromName(),
+			headerTitle: title,
 		});
 
 		setChatUsers(chatData.users);
@@ -107,7 +109,7 @@ const ChatScreen = ({ navigation, route }) => {
 
 			// send the text message to db
 			await sendTextMessage(
-				chatId,
+				id,
 				currentUserData.userId,
 				messageText,
 				replyingTo && replyingTo.key
@@ -197,19 +199,30 @@ const ChatScreen = ({ navigation, route }) => {
 
 					{chatId && (
 						<FlatList
-							ref={(ref) => flatList.current = ref}
-							onContentSizeChange={() => flatList.current.scrollToEnd({animated : false})}
+							ref={(ref) => (flatList.current = ref)}
+							onContentSizeChange={() =>
+								chatMessages.length > 0 &&
+								flatList.current.scrollToEnd({
+									animated: false,
+								})
+							}
 							onLayout={() => flatList.current.scrollToEnd()}
 							data={chatMessages}
 							renderItem={(itemData) => {
 								const message = itemData.item;
-								const isOurMessage =
+								const isOwnMessage =
 									message.sentBy === currentUserData.userId;
 
-								const messageType = isOurMessage
+								const messageType = isOwnMessage
 									? "myMessage"
 									: "theirMessage";
 
+								const sender =
+									message.sentBy &&
+									storedUsers[message.sentBy];
+								const name =
+									sender &&
+									`${sender.firstName} ${sender.lastName}`;
 								return (
 									<Bubble
 										text={message.text}
@@ -217,6 +230,12 @@ const ChatScreen = ({ navigation, route }) => {
 										userId={currentUserData.userId}
 										chatId={chatId}
 										messageId={message.key}
+										name={
+											!chatData.isGroupChat ||
+											isOwnMessage
+												? undefined
+												: name
+										}
 										date={message.sentAt}
 										setReply={() => setReplyingTo(message)}
 										imageUrl={message.imageUrl}

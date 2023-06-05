@@ -68,7 +68,6 @@ const ChatListScreen = ({ navigation, route }) => {
 		if (chatData) {
 			// if there's existing chat, navigate to that
 			navigationProps = { chatId: chatData.key };
-			
 		} else {
 			const chatUsers = selectedUsersList || [selectedUser];
 
@@ -80,12 +79,13 @@ const ChatListScreen = ({ navigation, route }) => {
 				newChatData: {
 					users: chatUsers,
 					isGroupChat: selectedUsersList !== undefined,
+					chatName: chatName,
 				},
 			};
 
-			if (chatName) {
-				navigationProps.chatName = chatName;
-			}
+			// if (chatName) {
+			// 	navigationProps.chatName = chatName;
+			// }
 		}
 
 		navigation.navigate("ChatScreen", navigationProps);
@@ -110,16 +110,26 @@ const ChatListScreen = ({ navigation, route }) => {
 				renderItem={(itemData) => {
 					const chatData = itemData.item;
 					const chatId = chatData.key;
-					const otherUserId = chatData.users.find(
-						(uid) => uid !== currentUserData.userId
-					);
-					const otherUser = storedUsers[otherUserId];
+					const isGroupChat = chatData.isGroupChat;
 
-					if (!otherUser) return;
+					let title = "";
+					let subtitle = chatData.latestMessage || "New Chat";
+					let image = "";
 
-					const title = `${otherUser.firstName} ${otherUser.lastName}`;
-					const subtitle = chatData.latestMessage || "New Chat";
-					const image = otherUser.profilePicture;
+					if (isGroupChat) {
+						title = chatData.chatName;
+					} else {
+						const otherUserId = chatData.users.find(
+							(uid) => uid !== currentUserData.userId
+						);
+						const otherUser = storedUsers[otherUserId];
+
+						if (!otherUser) return;
+
+						title = `${otherUser.firstName} ${otherUser.lastName}`;
+						image = otherUser.profilePicture;
+					}
+
 					return (
 						<DataItem
 							title={title}
