@@ -25,6 +25,7 @@ import ReplyTo from "../components/ReplyTo";
 import {
 	launchImagePicker,
 	openCamera,
+	uploadImageAsync,
 	uploadImageAsynce,
 } from "../utils/imagePickerHelper";
 import AwesomeAlert from "react-native-awesome-alerts";
@@ -100,7 +101,9 @@ const ChatScreen = ({ navigation, route }) => {
 								color={colors.textColor}
 								onPress={() => {
 									chatData.isGroupChat
-										? navigation.navigate("ChatSettings", { chatId : chatId})
+										? navigation.navigate("ChatSettings", {
+												chatId: chatId,
+										  })
 										: navigation.navigate("Contact", {
 												uid: chatUsers.find(
 													(uid) =>

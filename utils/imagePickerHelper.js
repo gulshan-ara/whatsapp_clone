@@ -13,57 +13,46 @@ export const launchImagePicker = async () => {
 	await checkMediaPermissions();
 
 	const result = await ImagePicker.launchImageLibraryAsync({
-		// allows only images to pick
 		mediaTypes: ImagePicker.MediaTypeOptions.Images,
-		// allows to crop the image
 		allowsEditing: true,
-		// aspect ratio
-		aspect: [1, 1], // square image
+		aspect: [1, 1],
 		quality: 1,
 	});
 
-	if (!result.canceled) {
+	if (!result.cancelled) {
 		return result.uri;
 	}
 };
 
 export const openCamera = async () => {
-
 	const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
 
-	if(permissionResult.granted === false){
+	if (permissionResult.granted === false) {
 		console.log("No permission to access the camera");
 		return;
 	}
 
 	const result = await ImagePicker.launchCameraAsync({
-		// allows only images to pick
 		mediaTypes: ImagePicker.MediaTypeOptions.Images,
-		// allows to crop the image
 		allowsEditing: true,
-		// aspect ratio
-		aspect: [1, 1], // square image
+		aspect: [1, 1],
 		quality: 1,
 	});
 
-	if (!result.canceled) {
+	if (!result.cancelled) {
 		return result.uri;
 	}
 };
 
-// converting the locally uploaded image into a blob (binary large object)
 export const uploadImageAsynce = async (uri, isChatImage = false) => {
 	const app = getFirebaseApp();
 
 	const blob = await new Promise((resolve, reject) => {
-		// creating a request
 		const xhr = new XMLHttpRequest();
-		// sending response on load
 		xhr.onload = function () {
 			resolve(xhr.response);
 		};
 
-		// error catching block
 		xhr.onerror = function (e) {
 			console.log(e);
 			reject(new TypeError("Network request failed"));
