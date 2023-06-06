@@ -100,7 +100,7 @@ const ChatScreen = ({ navigation, route }) => {
 								color={colors.textColor}
 								onPress={() => {
 									chatData.isGroupChat
-										? navigation.navigate("")
+										? navigation.navigate("ChatSettings", { chatId : chatId})
 										: navigation.navigate("Contact", {
 												uid: chatUsers.find(
 													(uid) =>

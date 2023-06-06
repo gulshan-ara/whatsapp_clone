@@ -41,12 +41,7 @@ export const sendTextMessage = async (
 	await sendMessage(chatId, senderId, messageText, null, replyTo);
 };
 
-export const sendImageMessage = async (
-	chatId,
-	senderId,
-	imageUrl,
-	replyTo
-) => {
+export const sendImageMessage = async (chatId, senderId, imageUrl, replyTo) => {
 	await sendMessage(chatId, senderId, "Image", imageUrl, replyTo);
 };
 
@@ -115,6 +110,22 @@ export const starMessage = async (messageId, chatId, userId) => {
 
 			await set(childRef, starMessageData);
 		}
+	} catch (error) {
+		console.log(error);
+	}
+};
+
+export const updateChatData = async (chatId, userId, chatData) => {
+	try {
+		const app = getFirebaseApp();
+		const dbRef = ref(getDatabase(app));
+		const chatRef = child(dbRef, `chats/${chatId}`);
+
+		await update(chatRef, {
+			...chatData,
+			updatedAt: new Date().toISOString(),
+			updatedBy: userId,
+		});
 	} catch (error) {
 		console.log(error);
 	}

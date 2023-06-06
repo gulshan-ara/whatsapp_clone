@@ -18,6 +18,7 @@ import {
 import { updateSignedInUserDate } from "../utils/actions/authActions";
 import { updateLoggedInUserData } from "../store/authSlice";
 import { useDispatch } from "react-redux";
+import { updateChatData } from "../utils/actions/chatActions";
 
 const ProfileImage = ({
 	size,
@@ -26,7 +27,8 @@ const ProfileImage = ({
 	showEditButton,
 	onPress,
 	showRemoveButton,
-	style
+	style,
+	chatId,
 }) => {
 	const dispatch = useDispatch();
 	const source = uri ? { uri: uri } : userImage;
@@ -46,21 +48,29 @@ const ProfileImage = ({
 
 			setIsLoading(true);
 			// upload image to firebase storage
-			const uploadedUri = await uploadImageAsynce(tempUri);
+			const uploadedUri = await uploadImageAsynce(
+				tempUri,
+				chatId !== undefined
+			);
 			setIsLoading(false);
 
 			if (!uploadedUri) {
 				throw new Error("Could not upload image");
 			}
 
-			const newData = {
-				profilePicture: uploadedUri,
-			};
-			// add profile picture to users database info
-			await updateSignedInUserDate(userId, newData);
-
-			// updating global states of redux
-			dispatch(updateLoggedInUserData({ newData: newData }));
+			if (chatId) {
+				await updateChatData(chatId, userId, {
+					chatImage: uploadedUri,
+				});
+			} else {
+				const newData = {
+					profilePicture: uploadedUri,
+				};
+				// add profile picture to users database info
+				await updateSignedInUserDate(userId, newData);
+				// updating global states of redux
+				dispatch(updateLoggedInUserData({ newData: newData }));
+			}
 
 			// upload the selected image to local device
 			setImage({ uri: uploadedUri });
