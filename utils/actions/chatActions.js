@@ -179,15 +179,28 @@ export const addUsersToGroupChat = async (
 	const existingUsers = Object.values(chatData.users);
 	const newUsers = [];
 
-	userToAddData.forEach((userToAdd) => {
+	let addedUserName = "";
+
+	userToAddData.forEach(async (userToAdd) => {
 		const userToAddId = userToAdd.userId;
 
 		if (existingUsers.includes(userToAddId)) return;
 		newUsers.push(userToAddId);
 
-		addUserChat(userToAddId, chatData.key);
+		await addUserChat(userToAddId, chatData.key);
+
+		addedUserName = `${userToAdd.firstName} ${userToAdd.lastName}`;
 	});
 
-	if(newUsers.length === 0) return;
-	await updateChatData(chatData.key, userLoggedInData.userId, { users : existingUsers.concat(newUsers)});
+	if (newUsers.length === 0) return;
+	await updateChatData(chatData.key, userLoggedInData.userId, {
+		users: existingUsers.concat(newUsers),
+	});
+
+	const moreUserMsg =
+		newUsers.length > 1 ? `and ${newUsers.length - 1} others ` : " ";
+
+	const messageText = `${userLoggedInData.firstName} ${userLoggedInData.lastName} added ${addedUserName} ${moreUserMsg}to the chat`;
+
+	sendInfoMessage(chatData.key, userLoggedInData.userId, messageText);
 };

@@ -64,6 +64,7 @@ const ChatSettingsScreen = ({ route, navigation }) => {
 		});
 
 		addUsersToGroupChat(userData, selectedUsersData, chatData);
+		navigation.goBack();
 	}, [selectedUsers]);
 
 	const inputChangeHandler = useCallback(
