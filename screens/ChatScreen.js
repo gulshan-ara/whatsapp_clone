@@ -25,7 +25,6 @@ import ReplyTo from "../components/ReplyTo";
 import {
 	launchImagePicker,
 	openCamera,
-	uploadImageAsync,
 	uploadImageAsynce,
 } from "../utils/imagePickerHelper";
 import AwesomeAlert from "react-native-awesome-alerts";
@@ -235,7 +234,7 @@ const ChatScreen = ({ navigation, route }) => {
 									animated: false,
 								})
 							}
-							onLayout={() => flatList.current.scrollToEnd()}
+							onLayout={() => chatMessages.length > 0 && flatList.current.scrollToEnd()}
 							data={chatMessages}
 							renderItem={(itemData) => {
 								const message = itemData.item;
