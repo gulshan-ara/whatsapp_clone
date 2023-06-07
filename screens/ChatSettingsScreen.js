@@ -14,6 +14,7 @@ import ProfileImage from "../components/ProfileImage";
 import Input from "../components/Input";
 import { reducer } from "../utils/reducers/formReducer";
 import {
+	addUsersToGroupChat,
 	removeUserFromChat,
 	updateChatData,
 } from "../utils/actions/chatActions";
@@ -61,6 +62,8 @@ const ChatSettingsScreen = ({ route, navigation }) => {
 
 			selectedUsersData.push(storedUsers[uid]);
 		});
+
+		addUsersToGroupChat(userData, selectedUsersData, chatData);
 	}, [selectedUsers]);
 
 	const inputChangeHandler = useCallback(

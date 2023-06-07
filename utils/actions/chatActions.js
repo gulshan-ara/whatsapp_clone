@@ -9,7 +9,7 @@ import {
 	update,
 } from "firebase/database";
 import { getFirebaseApp } from "../firebaseHelper";
-import { deleteUserChat, getUserChats } from "./userActions";
+import { addUserChat, deleteUserChat, getUserChats } from "./userActions";
 
 export const createChat = async (loggedInUserId, chatData) => {
 	const newChatData = {
@@ -42,11 +42,7 @@ export const sendTextMessage = async (
 	await sendMessage(chatId, senderId, messageText, null, replyTo, null);
 };
 
-export const sendInfoMessage = async (
-	chatId,
-	senderId,
-	messageText
-) => {
+export const sendInfoMessage = async (chatId, senderId, messageText) => {
 	await sendMessage(chatId, senderId, messageText, null, null, "info");
 };
 
@@ -145,24 +141,53 @@ export const updateChatData = async (chatId, userId, chatData) => {
 	}
 };
 
-export const removeUserFromChat = async (userLoggedInData, userToRemoveData, chatData) => {
+export const removeUserFromChat = async (
+	userLoggedInData,
+	userToRemoveData,
+	chatData
+) => {
 	const userToRemoveId = userToRemoveData.userId;
-	const newUsers = chatData.users.filter(uid => uid !== userToRemoveId);
-	await updateChatData(chatData.key, userLoggedInData.userId, { users: newUsers});
+	const newUsers = chatData.users.filter((uid) => uid !== userToRemoveId);
+	await updateChatData(chatData.key, userLoggedInData.userId, {
+		users: newUsers,
+	});
 
 	// remove userChats
 	const userChats = await getUserChats(userToRemoveId);
 
-	for (const key in userChats){
+	for (const key in userChats) {
 		const currentChatId = userChats[key];
 
-		if(currentChatId === chatData.key){
+		if (currentChatId === chatData.key) {
 			await deleteUserChat(userToRemoveId, key);
 			break;
 		}
 	}
 
-	const messageText = userLoggedInData.userId === userToRemoveId ? `${userLoggedInData.firstName} left the chat`:
-	`${userLoggedInData.firstName} removed ${userToRemoveData.firstName}`;
+	const messageText =
+		userLoggedInData.userId === userToRemoveId
+			? `${userLoggedInData.firstName} left the chat`
+			: `${userLoggedInData.firstName} removed ${userToRemoveData.firstName}`;
 	await sendInfoMessage(chatData.key, userLoggedInData.userId, messageText);
-}
+};
+
+export const addUsersToGroupChat = async (
+	userLoggedInData,
+	userToAddData,
+	chatData
+) => {
+	const existingUsers = Object.values(chatData.users);
+	const newUsers = [];
+
+	userToAddData.forEach((userToAdd) => {
+		const userToAddId = userToAdd.userId;
+
+		if (existingUsers.includes(userToAddId)) return;
+		newUsers.push(userToAddId);
+
+		addUserChat(userToAddId, chatData.key);
+	});
+
+	if(newUsers.length === 0) return;
+	await updateChatData(chatData.key, userLoggedInData.userId, { users : existingUsers.concat(newUsers)});
+};
