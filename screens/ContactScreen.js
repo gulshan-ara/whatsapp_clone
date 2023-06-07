@@ -102,6 +102,7 @@ const ContactScreen = ({ route, navigation }) => {
 						title="Remove from chat"
 						color={colors.red}
 						onPress={removeFromChat}
+						style={{marginVertical: 10}}
 					/>
 				))}
 		</PageContainer>

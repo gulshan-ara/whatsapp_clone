@@ -19,22 +19,34 @@ const DataItem = ({
 	type,
 	isChecked,
 	icon,
+	hideImage,
 }) => {
+	const isHideImage = hideImage && hideImage === true;
+
 	return (
 		<TouchableWithoutFeedback onPress={onPress}>
 			<View style={styles.container}>
-				{!icon && <ProfileImage uri={image} size={40} />}
+				{!icon && !isHideImage && (
+					<ProfileImage uri={image} size={40} />
+				)}
 				{icon && (
 					<View style={styles.leftIconContainer}>
-						<AntDesign
-							name={icon}
-							size={24}
-							color={colors.blue}
-						/>
+						<AntDesign name={icon} size={24} color={colors.blue} />
 					</View>
 				)}
 				<View style={styles.textContainer}>
-					<Text numberOfLines={1} style={{...styles.title, ...{color: type === "button" ? colors.blue : colors.textColor}}}>
+					<Text
+						numberOfLines={1}
+						style={{
+							...styles.title,
+							...{
+								color:
+									type === "button"
+										? colors.blue
+										: colors.textColor,
+							},
+						}}
+					>
 						{title}
 					</Text>
 					{subTitle && (

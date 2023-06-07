@@ -18,6 +18,7 @@ import colors from "../constants/colors";
 import { setStoredUsers } from "../store/userSlice";
 import { setChatMessages, setStarredMessage } from "../store/messagesSlice";
 import ContactScreen from "../screens/ContactScreen";
+import DataListScreen from "../screens/DataListScreen";
 
 // stack navigator
 const Stack = createNativeStackNavigator();
@@ -86,6 +87,11 @@ const StackNavigator = () => {
 					options={{ headerTitle: "Contact Info" }}
 					component={ContactScreen}
 				/>
+				<Stack.Screen
+					name="DataList"
+					options={{ headerTitle: "" }}
+					component={DataListScreen}
+				/>
 			</Stack.Group>
 
 			<Stack.Group screenOptions={{ presentation: "containedModal" }}>
@@ -135,7 +141,7 @@ const MainNavigator = () => {
 
 					// if there's a chat data then storing it into an object
 					if (data) {
-						
+
 						if(!data.users.includes(currentUserData.userId)){
 							return;
 						};
