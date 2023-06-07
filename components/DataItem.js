@@ -9,19 +9,39 @@ import React from "react";
 import ProfileImage from "./ProfileImage";
 import colors from "../constants/colors";
 import { Ionicons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 
-const DataItem = ({ title, subTitle, image, onPress, type, isChecked }) => {
+const DataItem = ({
+	title,
+	subTitle,
+	image,
+	onPress,
+	type,
+	isChecked,
+	icon,
+}) => {
 	return (
 		<TouchableWithoutFeedback onPress={onPress}>
 			<View style={styles.container}>
-				<ProfileImage uri={image} size={40} />
+				{!icon && <ProfileImage uri={image} size={40} />}
+				{icon && (
+					<View style={styles.leftIconContainer}>
+						<AntDesign
+							name={icon}
+							size={24}
+							color={colors.blue}
+						/>
+					</View>
+				)}
 				<View style={styles.textContainer}>
-					<Text numberOfLines={1} style={styles.title}>
+					<Text numberOfLines={1} style={{...styles.title, ...{color: type === "button" ? colors.blue : colors.textColor}}}>
 						{title}
 					</Text>
-					<Text numberOfLines={1} style={styles.subTitle}>
-						{subTitle}
-					</Text>
+					{subTitle && (
+						<Text numberOfLines={1} style={styles.subTitle}>
+							{subTitle}
+						</Text>
+					)}
 				</View>
 				{type === "checkbox" && (
 					<View
@@ -35,7 +55,11 @@ const DataItem = ({ title, subTitle, image, onPress, type, isChecked }) => {
 				)}
 				{type === "link" && (
 					<View>
-						<Ionicons name="chevron-forward-outline" size={18} color={colors.grey} />
+						<Ionicons
+							name="chevron-forward-outline"
+							size={18}
+							color={colors.grey}
+						/>
 					</View>
 				)}
 			</View>
@@ -77,5 +101,13 @@ const styles = StyleSheet.create({
 	checkedStyle: {
 		backgroundColor: colors.primary,
 		borderColor: "transparent",
+	},
+	leftIconContainer: {
+		backgroundColor: colors.extraLightGrey,
+		borderRadius: 50,
+		alignItems: "center",
+		justifyContent: "center",
+		width: 40,
+		height: 40,
 	},
 });

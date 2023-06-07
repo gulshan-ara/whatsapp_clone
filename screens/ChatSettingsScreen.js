@@ -1,8 +1,15 @@
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+	ActivityIndicator,
+	ScrollView,
+	StyleSheet,
+	Text,
+	View,
+} from "react-native";
 import React, { useCallback, useReducer, useState } from "react";
 import { useSelector } from "react-redux";
 import PageContainer from "../components/PageContainer";
 import PageTitle from "../components/PageTitle";
+import DataItem from "../components/DataItem";
 import ProfileImage from "../components/ProfileImage";
 import Input from "../components/Input";
 import { reducer } from "../utils/reducers/formReducer";
@@ -17,6 +24,7 @@ const ChatSettingsScreen = ({ route, navigation }) => {
 	const chatId = route.params.chatId;
 	const chatData = useSelector((state) => state.chats.chatsData[chatId]);
 	const userData = useSelector((state) => state.auth.userData);
+	const storedUsers = useSelector((state) => state.users.storedUsers);
 
 	// initial values of form
 	const initialState = {
@@ -91,23 +99,43 @@ const ChatSettingsScreen = ({ route, navigation }) => {
 				/>
 
 				<View style={styles.sectionContainer}>
-					<Text style={styles.heading}>{chatData.users.length} participents</Text>
+					<Text style={styles.heading}>
+						{chatData.users.length} participents
+					</Text>
+					<DataItem title="Add users" icon="plus" type="button" />
+
+					{chatData.users.map((uid) => {
+						const chatUser = storedUsers[uid];
+						return (
+							<DataItem
+								key={uid}
+								image={chatUser.profilePicture}
+								title={`${chatUser.firstName} ${chatUser.lastName}`}
+								subTitle={chatUser.about}
+								type={uid !== userData.userId && "link"}
+								onPress={() => {
+									uid !== userData.userId &&
+										navigation.navigate("Contact", { uid });
+								}}
+							/>
+						);
+					})}
 				</View>
 
-				{
-					showSuccessMessage && <Text>Saved!!</Text>
-				}
+				{showSuccessMessage && <Text>Saved!!</Text>}
 
-				{
-					isLoading ?
-					<ActivityIndicator size={"small"} color={colors.primary}/> :
-					(hasChanges() && <SubmitButton 
-						title="Save Changes"
-						color={colors.primary}
-						onPress={saveHandler}
-						disabled={!formState.formIsValid}
-					/>)
-				}
+				{isLoading ? (
+					<ActivityIndicator size={"small"} color={colors.primary} />
+				) : (
+					hasChanges() && (
+						<SubmitButton
+							title="Save Changes"
+							color={colors.primary}
+							onPress={saveHandler}
+							disabled={!formState.formIsValid}
+						/>
+					)
+				)}
 			</ScrollView>
 		</PageContainer>
 	);
@@ -119,5 +147,15 @@ const styles = StyleSheet.create({
 	scrollView: {
 		justifyContent: "center",
 		alignItems: "center",
+	},
+	sectionContainer: {
+		width: "100%",
+		marginTop: 10,
+	},
+	heading: {
+		marginVertical: 8,
+		color: colors.textColor,
+		fontFamily: "bold",
+		letterSpacing: 0.3,
 	},
 });
