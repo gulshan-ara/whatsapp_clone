@@ -6,6 +6,7 @@ import {
 	orderByChild,
 	query,
 	ref,
+	remove,
 	startAt,
 } from "firebase/database";
 import { getFirebaseApp } from "../firebaseHelper";
@@ -58,6 +59,19 @@ export const searchUsers = async (queryText) => {
 		}
 
 		return {};
+	} catch (error) {
+		console.log(error);
+		throw error;
+	}
+};
+
+export const deleteUserChat = async (userId, key) => {
+	try {
+		const app = getFirebaseApp();
+		const dbRef = ref(getDatabase(app));
+		const chatRef = child(dbRef, `userChats/${userId}/${key}`);
+
+		await remove(chatRef);
 	} catch (error) {
 		console.log(error);
 		throw error;
