@@ -45,7 +45,7 @@ const ChatScreen = ({ navigation, route }) => {
 	const storedUsers = useSelector((state) => state.users.storedUsers);
 	const storedChats = useSelector((state) => state.chats.chatsData);
 	const chatData =
-		(chatId && storedChats[chatId]) || route?.params?.newChatData;
+		(chatId && storedChats[chatId]) || route?.params?.newChatData || {};
 
 	// retrieve chats for one chat only
 	const chatMessages = useSelector((state) => {
@@ -83,13 +83,12 @@ const ChatScreen = ({ navigation, route }) => {
 		);
 	};
 
-	const title = chatData.chatName ?? getChatTitleFromName();
-
 	// set chat users
 	useEffect(() => {
+		if (!chatData) return;
 		// setting the header title of chat
 		navigation.setOptions({
-			headerTitle: title,
+			headerTitle: chatData.chatName ?? getChatTitleFromName(),
 			headerRight: () => {
 				return (
 					<HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
@@ -119,7 +118,7 @@ const ChatScreen = ({ navigation, route }) => {
 		});
 
 		setChatUsers(chatData.users);
-	}, [chatUsers, title]);
+	}, [chatUsers]);
 
 	// This function will render only when messageText is changed
 	const sendMessage = useCallback(async () => {
@@ -234,7 +233,10 @@ const ChatScreen = ({ navigation, route }) => {
 									animated: false,
 								})
 							}
-							onLayout={() => chatMessages.length > 0 && flatList.current.scrollToEnd()}
+							onLayout={() =>
+								chatMessages.length > 0 &&
+								flatList.current.scrollToEnd()
+							}
 							data={chatMessages}
 							renderItem={(itemData) => {
 								const message = itemData.item;
@@ -242,14 +244,14 @@ const ChatScreen = ({ navigation, route }) => {
 									message.sentBy === currentUserData.userId;
 
 								let messageType;
-								if(message.type && message.type === "info"){
+								if (message.type && message.type === "info") {
 									messageType = "info";
-								}else if( isOwnMessage){
+								} else if (isOwnMessage) {
 									messageType = "myMessage";
-								}else{
+								} else {
 									messageType = "theirMessage";
 								}
-								
+
 								const sender =
 									message.sentBy &&
 									storedUsers[message.sentBy];

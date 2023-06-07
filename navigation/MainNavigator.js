@@ -135,6 +135,11 @@ const MainNavigator = () => {
 
 					// if there's a chat data then storing it into an object
 					if (data) {
+						
+						if(!data.users.includes(currentUserData.userId)){
+							return;
+						};
+
 						data.key = chatSnapshot.key;
 
 						// get the name of user from the key
