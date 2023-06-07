@@ -241,10 +241,15 @@ const ChatScreen = ({ navigation, route }) => {
 								const isOwnMessage =
 									message.sentBy === currentUserData.userId;
 
-								const messageType = isOwnMessage
-									? "myMessage"
-									: "theirMessage";
-
+								let messageType;
+								if(message.type && message.type === "info"){
+									messageType = "info";
+								}else if( isOwnMessage){
+									messageType = "myMessage";
+								}else{
+									messageType = "theirMessage";
+								}
+								
 								const sender =
 									message.sentBy &&
 									storedUsers[message.sentBy];

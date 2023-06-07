@@ -39,11 +39,19 @@ export const sendTextMessage = async (
 	messageText,
 	replyTo
 ) => {
-	await sendMessage(chatId, senderId, messageText, null, replyTo);
+	await sendMessage(chatId, senderId, messageText, null, replyTo, null);
+};
+
+export const sendInfoMessage = async (
+	chatId,
+	senderId,
+	messageText
+) => {
+	await sendMessage(chatId, senderId, messageText, null, null, "info");
 };
 
 export const sendImageMessage = async (chatId, senderId, imageUrl, replyTo) => {
-	await sendMessage(chatId, senderId, "Image", imageUrl, replyTo);
+	await sendMessage(chatId, senderId, "Image", imageUrl, replyTo, null);
 };
 
 const sendMessage = async (
@@ -51,7 +59,8 @@ const sendMessage = async (
 	senderId,
 	messageText,
 	imageUrl,
-	replyTo
+	replyTo,
+	type
 ) => {
 	const app = getFirebaseApp();
 	const dbRef = ref(getDatabase(app));
@@ -69,6 +78,10 @@ const sendMessage = async (
 
 	if (imageUrl) {
 		messageData.imageUrl = imageUrl;
+	}
+
+	if (type) {
+		messageData.type = type;
 	}
 
 	// send message to db under 'messages' node
@@ -148,4 +161,7 @@ export const removeUserFromChat = async (userLoggedInData, userToRemoveData, cha
 			break;
 		}
 	}
+
+	const messageText = `${userLoggedInData.firstName} removed ${userToRemoveData.firstName}`;
+	await sendInfoMessage(chatData.key, userLoggedInData.userId, messageText);
 }

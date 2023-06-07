@@ -95,6 +95,12 @@ const Bubble = ({
 		case "reply":
 			bubbleStyle.backgroundColor = "#F2F2F2";
 			break;
+		
+		case "info":
+			bubbleStyle.backgroundColor = "white";
+			bubbleStyle.alignItems = "center";
+			textStyle.color = colors.textColor;
+			break;
 
 		default:
 			break;
@@ -120,7 +126,7 @@ const Bubble = ({
 				style={{ width: "100%" }}
 			>
 				<View style={bubbleStyle}>
-					{name && (
+					{name && type !== "info" && (
 						<Text
 							style={{ letterSpacing: 0.3, fontFamily: "medium" }}
 						>
@@ -144,7 +150,7 @@ const Bubble = ({
 						)
 					}
 
-					{dateString && (
+					{dateString && type !== "info" && (
 						<View style={styles.timeContainer}>
 							<Text style={styles.time}>{dateString}</Text>
 							{isStarred && (
