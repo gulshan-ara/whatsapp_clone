@@ -5,7 +5,7 @@ import {
 	Text,
 	View,
 } from "react-native";
-import React, { useCallback, useReducer, useState } from "react";
+import React, { useCallback, useEffect, useReducer, useState } from "react";
 import { useSelector } from "react-redux";
 import PageContainer from "../components/PageContainer";
 import PageTitle from "../components/PageTitle";
@@ -43,6 +43,25 @@ const ChatSettingsScreen = ({ route, navigation }) => {
 
 	// reducer hook for handling all form input states
 	const [formState, dispatchFormState] = useReducer(reducer, initialState);
+
+	// adding new member in group chat
+	const selectedUsers = route.params && route.params.selectedUsers;
+	// adding new member in group chat
+	useEffect(() => {
+		if (!selectedUsers) return;
+
+		const selectedUsersData = [];
+		selectedUsers.forEach((uid) => {
+			if (uid === userData.uid) return;
+
+			if (!storedUsers[uid]) {
+				console.log("No user data found in the data store.");
+				return;
+			}
+
+			selectedUsersData.push(storedUsers[uid]);
+		});
+	}, [selectedUsers]);
 
 	const inputChangeHandler = useCallback(
 		(inputId, inputValue) => {
@@ -121,7 +140,19 @@ const ChatSettingsScreen = ({ route, navigation }) => {
 					<Text style={styles.heading}>
 						{chatData.users.length} participents
 					</Text>
-					<DataItem title="Add users" icon="plus" type="button" />
+
+					<DataItem
+						title="Add users"
+						icon="plus"
+						type="button"
+						onPress={() => {
+							navigation.navigate("NewChat", {
+								isGroupChat: true,
+								existingUsers: chatData.users,
+								chatId: chatId,
+							});
+						}}
+					/>
 
 					{chatData.users.slice(0, 4).map((uid) => {
 						const chatUser = storedUsers[uid];
