@@ -119,7 +119,7 @@ const ChatScreen = ({ navigation, route }) => {
 		});
 
 		setChatUsers(chatData.users);
-	}, [chatUsers]);
+	}, [chatUsers, title]);
 
 	// This function will render only when messageText is changed
 	const sendMessage = useCallback(async () => {
