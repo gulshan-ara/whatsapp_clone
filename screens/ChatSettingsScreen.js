@@ -115,7 +115,7 @@ const ChatSettingsScreen = ({ route, navigation }) => {
 								type={uid !== userData.userId && "link"}
 								onPress={() => {
 									uid !== userData.userId &&
-										navigation.navigate("Contact", { uid });
+										navigation.navigate("Contact", { uid, chatId});
 								}}
 							/>
 						);
