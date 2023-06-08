@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
 
 // imports from my own file
 import ChatListScreen from "../screens/ChatListScreen";
@@ -107,6 +109,39 @@ const MainNavigator = () => {
 	const currentUserData = useSelector((state) => state.auth.userData);
 	const storedUsers = useSelector((state) => state.users.storedUsers);
 
+	// push notification configuration
+	const [expoPushToken, setExpoPushToken] = useState("");
+	const notificationListener = useRef();
+	const responseListener = useRef();
+
+	// use effect fo expo push notifications
+	useEffect(() => {
+		registerForPushNotificationsAsync().then((token) =>
+			setExpoPushToken(token)
+		);
+
+		notificationListener.current = Notifications.addNotificationReceivedListener(
+			(notification) => {
+				// handle recieved notification
+			}
+		);
+
+		responseListener.current = Notifications.addNotificationResponseReceivedListener(
+			(response) => {
+				console.log(response);
+			}
+		);
+
+		return () => {
+			Notifications.removeNotificationSubscription(
+				notificationListener.current
+			);
+			Notifications.removeNotificationSubscription(
+				responseListener.current
+			);
+		};
+	}, []);
+
 	useEffect(() => {
 		console.log("Subscribing to firebase listeners");
 		const app = getFirebaseApp();
@@ -141,10 +176,9 @@ const MainNavigator = () => {
 
 					// if there's a chat data then storing it into an object
 					if (data) {
-
-						if(!data.users.includes(currentUserData.userId)){
+						if (!data.users.includes(currentUserData.userId)) {
 							return;
-						};
+						}
 
 						data.key = chatSnapshot.key;
 
@@ -228,3 +262,37 @@ const MainNavigator = () => {
 };
 
 export default MainNavigator;
+
+async function registerForPushNotificationsAsync() {
+	let token;
+
+	if (Platform.OS === "android") {
+		await Notifications.setNotificationChannelAsync("default", {
+			name: "default",
+			importance: Notifications.AndroidImportance.MAX,
+			vibrationPattern: [0, 250, 250, 250],
+			lightColor: "#FF231F7C",
+		});
+	}
+
+	if (Device.isDevice) {
+		const {
+			status: existingStatus,
+		} = await Notifications.getPermissionsAsync();
+		let finalStatus = existingStatus;
+		if (existingStatus !== "granted") {
+			const { status } = await Notifications.requestPermissionsAsync();
+			finalStatus = status;
+		}
+		if (finalStatus !== "granted") {
+			alert("Failed to get push token for push notification!");
+			return;
+		}
+		token = (await Notifications.getExpoPushTokenAsync()).data;
+		console.log(token);
+	} else {
+		alert("Must use physical device for Push Notifications");
+	}
+
+	return token;
+}
