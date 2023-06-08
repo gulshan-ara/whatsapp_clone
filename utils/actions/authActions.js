@@ -8,6 +8,8 @@ import { child, getDatabase, ref, set, update } from "firebase/database";
 import { authenticate, logOut } from "../../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUserData } from "./userActions";
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
 
 let timer;
 
@@ -41,6 +43,9 @@ export const signUp = (firstName, lastName, email, password) => {
 
 			//storing user sign in data to device via async storage
 			saveDataToStorage(accessToken, uid, expiryDate);
+
+			// pushing device push tokens in user database
+			await storePushToken(userData);
 
 			timer = setTimeout(() => {
 				dispatch(userLogOut());
@@ -117,6 +122,9 @@ export const signIn = (email, password) => {
 			//storing user sign in data to device via async storage
 			saveDataToStorage(accessToken, uid, expiryDate);
 
+			// pushing device push tokens in user database
+			await storePushToken(userData);
+
 			timer = setTimeout(() => {
 				dispatch(userLogOut());
 			}, miliSecondsUntilExpiry);
@@ -154,4 +162,35 @@ export const updateSignedInUserDate = async (userId, newData) => {
 	const dbRef = ref(getDatabase());
 	const childRef = child(dbRef, `user/${userId}`);
 	await update(childRef, newData);
+};
+
+const storePushToken = async (userData) => {
+	if (!Device.isDevice) {
+		return;
+	}
+
+	// current token for current device
+	const token = (await Notifications.getExpoPushTokenAsync()).data;
+
+	const tokenData = { ...userData.pushTokens } || {};
+	const tokenArray = Object.values(tokenData);
+
+	// don't store token if it already exists
+	if (tokenArray.includes(token)) {
+		return;
+	}
+
+	// store new tokens
+	tokenArray.push(token);
+
+	for (let i = 0; i < tokenArray.length; i++) {
+		const tok = tokenArray[i];
+		tokenData[i] = tok;
+	}
+
+	const app = getFirebaseApp();
+	const dbRef = ref(getDatabase(app));
+	const userRef = child(dbRef, `user/${userData.userId}/pushTokens`);
+
+	await set(userRef, tokenData);
 };

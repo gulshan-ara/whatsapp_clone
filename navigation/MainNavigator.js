@@ -111,6 +111,7 @@ const MainNavigator = () => {
 
 	// push notification configuration
 	const [expoPushToken, setExpoPushToken] = useState("");
+	// console.log(expoPushToken);
 	const notificationListener = useRef();
 	const responseListener = useRef();
 
