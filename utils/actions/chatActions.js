@@ -10,6 +10,7 @@ import {
 } from "firebase/database";
 import { getFirebaseApp } from "../firebaseHelper";
 import { addUserChat, deleteUserChat, getUserChats } from "./userActions";
+import { getUserPushTokens } from "./authActions";
 
 export const createChat = async (loggedInUserId, chatData) => {
 	const newChatData = {
@@ -35,11 +36,25 @@ export const createChat = async (loggedInUserId, chatData) => {
 
 export const sendTextMessage = async (
 	chatId,
-	senderId,
+	senderData,
 	messageText,
-	replyTo
+	replyTo,
+	chatUsers
 ) => {
-	await sendMessage(chatId, senderId, messageText, null, replyTo, null);
+	await sendMessage(
+		chatId,
+		senderData.userId,
+		messageText,
+		null,
+		replyTo,
+		null
+	);
+	const otherUsers = chatUsers.filter((uid) => uid !== senderData.userId);
+	await sendPushNotificationsForUsers(
+		otherUsers,
+		`${senderData.firstName} ${senderData.lastName}`,
+		messageText
+	);
 };
 
 export const sendInfoMessage = async (chatId, senderId, messageText) => {
@@ -203,4 +218,26 @@ export const addUsersToGroupChat = async (
 	const messageText = `${userLoggedInData.firstName} ${userLoggedInData.lastName} added ${addedUserName} ${moreUserMsg}to the chat`;
 
 	sendInfoMessage(chatData.key, userLoggedInData.userId, messageText);
+};
+
+const sendPushNotificationsForUsers = async (chatUsers, title, body) => {
+	chatUsers.forEach(async (uid) => {
+		const tokens = await getUserPushTokens(uid);
+
+		for (const key in tokens) {
+			const token = tokens[key];
+
+			await fetch("https://exp.host/--/api/v2/push/send", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({
+					to: token,
+					title,
+					body,
+				}),
+			});
+		}
+	});
 };

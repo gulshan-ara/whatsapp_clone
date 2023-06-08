@@ -137,9 +137,10 @@ const ChatScreen = ({ navigation, route }) => {
 			// send the text message to db
 			await sendTextMessage(
 				id,
-				currentUserData.userId,
+				currentUserData,
 				messageText,
-				replyingTo && replyingTo.key
+				replyingTo && replyingTo.key,
+				chatUsers
 			);
 
 			setMessageText("");
