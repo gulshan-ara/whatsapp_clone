@@ -4,7 +4,7 @@ import {
 	getAuth,
 	signInWithEmailAndPassword,
 } from "firebase/auth";
-import { child, getDatabase, ref, set, update } from "firebase/database";
+import { child, get, getDatabase, ref, set, update } from "firebase/database";
 import { authenticate, logOut } from "../../store/authSlice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUserData } from "./userActions";
@@ -48,7 +48,7 @@ export const signUp = (firstName, lastName, email, password) => {
 			await storePushToken(userData);
 
 			timer = setTimeout(() => {
-				dispatch(userLogOut());
+				dispatch(userLogOut(userData));
 			}, miliSecondsUntilExpiry);
 		} catch (error) {
 			console.log(error.message);
@@ -126,7 +126,7 @@ export const signIn = (email, password) => {
 			await storePushToken(userData);
 
 			timer = setTimeout(() => {
-				dispatch(userLogOut());
+				dispatch(userLogOut(userData));
 			}, miliSecondsUntilExpiry);
 		} catch (error) {
 			console.log(error.message);
@@ -146,8 +146,13 @@ export const signIn = (email, password) => {
 	};
 };
 
-export const userLogOut = () => {
+export const userLogOut = (userData) => {
 	return async (dispatch) => {
+		try {
+			await removePushToken(userData);
+		} catch (error) {
+			console.log(error);
+		}
 		AsyncStorage.clear();
 		clearTimeout(timer);
 		dispatch(logOut());
@@ -193,4 +198,46 @@ const storePushToken = async (userData) => {
 	const userRef = child(dbRef, `user/${userData.userId}/pushTokens`);
 
 	await set(userRef, tokenData);
+};
+
+const removePushToken = async (userData) => {
+	if (!Device.isDevice) {
+		return;
+	}
+
+	// current token for current device
+	const token = (await Notifications.getExpoPushTokenAsync()).data;
+
+	const tokenData = await getUserPushTokens(userData.userId);
+
+	for (const key in tokenData) {
+		if (tokenData[key] === token) {
+			delete tokenData[key];
+			break;
+		}
+	}
+
+	const app = getFirebaseApp();
+	const dbRef = ref(getDatabase(app));
+	const userRef = child(dbRef, `user/${userData.userId}/pushTokens`);
+
+	await set(userRef, tokenData || {});
+};
+
+export const getUserPushTokens = async (userId) => {
+	try {
+		const app = getFirebaseApp();
+		const dbRef = ref(getDatabase(app));
+		const userRef = child(dbRef, `user/${userId}/pushTokens`);
+
+		const snapshot = get(userRef);
+
+		if (!snapshot || !snapshot.exists()) {
+			return {};
+		}
+
+		return snapshot.val() || {};
+	} catch (error) {
+		console.log(error);
+	}
 };

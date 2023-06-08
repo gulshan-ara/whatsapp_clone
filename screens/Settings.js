@@ -209,7 +209,7 @@ const Settings = ({ navigation }) => {
 				/>
 				<SubmitButton
 					title="LogOut"
-					onPress={() => dispatch(userLogOut())}
+					onPress={() => dispatch(userLogOut(userData))}
 					style={{ marginTop: 20 }}
 					color={colors.red}
 				/>
