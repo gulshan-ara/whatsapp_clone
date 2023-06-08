@@ -195,9 +195,10 @@ const ChatScreen = ({ navigation, route }) => {
 			// send image
 			await sendImageMessage(
 				id,
-				currentUserData.userId,
+				currentUserData,
 				uploadUrl,
-				replyingTo && replyingTo.key
+				replyingTo && replyingTo.key,
+				chatUsers
 			);
 			setReplyingTo(null);
 
@@ -205,7 +206,7 @@ const ChatScreen = ({ navigation, route }) => {
 				setTempImageUri("");
 			}, 500);
 		} catch (error) {
-			console.log(error);
+			console.log(error, "chatscreen iimage");
 			setIsLoading(false);
 		}
 	}, [isLoading, tempImageUri]);
