@@ -5,7 +5,7 @@ import {
 	Text,
 	View,
 } from "react-native";
-import React, { useCallback, useReducer, useState } from "react";
+import React, { useCallback, useMemo, useReducer, useState } from "react";
 import PageTitle from "../components/PageTitle";
 import PageContainer from "../components/PageContainer";
 import { Feather, FontAwesome } from "@expo/vector-icons";
@@ -21,8 +21,9 @@ import {
 } from "../utils/actions/authActions";
 import { updateLoggedInUserData } from "../store/authSlice";
 import ProfileImage from "../components/ProfileImage";
+import DataItem from "../components/DataItem";
 
-const Settings = () => {
+const Settings = ({ navigation }) => {
 	// dispatch variable for passing an action in logout button
 	const dispatch = useDispatch();
 
@@ -31,6 +32,21 @@ const Settings = () => {
 
 	// retrieve userData from redux auth state
 	const userData = useSelector((state) => state.auth.userData);
+	const starredMessages = useSelector(
+		(state) => state.messages.starredMessages ?? {}
+	);
+
+	const sortedStarredMsgs = useMemo(() => {
+		let result = [];
+
+		const chats = Object.values(starredMessages);
+		chats.forEach((chat) => {
+			const chatMessages = Object.values(chat);
+			result = result.concat(chatMessages);
+		});
+
+		return result;
+	}, [starredMessages]);
 
 	// variables
 	const firstName = userData.firstName || "";
@@ -179,6 +195,18 @@ const Settings = () => {
 						)
 					)}
 				</View>
+				<DataItem
+					type={"link"}
+					title="Starred Messages"
+					hideImage={true}
+					onPress={() =>
+						navigation.navigate("DataList", {
+							title: "Starred Messages",
+							data: sortedStarredMsgs,
+							type: "messages",
+						})
+					}
+				/>
 				<SubmitButton
 					title="LogOut"
 					onPress={() => dispatch(userLogOut())}

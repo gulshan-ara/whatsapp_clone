@@ -30,6 +30,9 @@ const ChatSettingsScreen = ({ route, navigation }) => {
 		useSelector((state) => state.chats.chatsData[chatId]) || {};
 	const userData = useSelector((state) => state.auth.userData);
 	const storedUsers = useSelector((state) => state.users.storedUsers);
+	const starredMessages = useSelector(
+		(state) => state.messages.starredMessages[chatId] ?? {}
+	);
 
 	// initial values of form
 	const initialState = {
@@ -209,6 +212,19 @@ const ChatSettingsScreen = ({ route, navigation }) => {
 						/>
 					)
 				)}
+
+				<DataItem
+					type={"link"}
+					title="Starred Messages"
+					hideImage={true}
+					onPress={() =>
+						navigation.navigate("DataList", {
+							title: "Starred Messages",
+							data: Object.values(starredMessages),
+							type: "messages",
+						})
+					}
+				/>
 			</ScrollView>
 
 			{
